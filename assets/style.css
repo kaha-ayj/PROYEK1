@@ -13,7 +13,7 @@ color: #222;
 min-height: 100vh;
 }
 
-/* HEADER */
+
 header {
 display: flex;
 justify-content: space-between;
@@ -24,8 +24,7 @@ padding: 25px 80px;
 .logo img {
 width: 200px; 
 height: auto;
-transform: scale(1.2); 
-
+transform: scale(1.2);
 }
 
 .buttons button {
@@ -40,10 +39,6 @@ font-weight: 600;
 transition: 0.3s;
 }
 
-.buttons button.signup {
-background: #2b2b2b;
-}
-
 .buttons button:hover {
 opacity: 0.8;
 }
@@ -53,10 +48,14 @@ display: flex;
 justify-content: space-between;
 align-items: center;
 padding: 60px 80px;
+gap: 30px;
 }
 
 .hero .text {
-width: 55%;
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+max-width: 600px;
 }
 
 .hero h2 {
@@ -83,23 +82,27 @@ margin-bottom: 30px;
 .hero .cta {
 background-color: #2b2b2b;
 color: white;
-padding: 12px 28px;
+padding: 12px 24px;
 border: none;
-border-radius: 8px;
+border-radius: 10px;
 cursor: pointer;
 font-weight: 600;
+transition: 0.3s;
+}
+
+.hero .cta:hover {
+background-color: #444;
 }
 
 .hero .image img {
 width: 350px;
 }
 
-/* FOOTER */
 footer {
 text-align: center;
 padding: 20px 0;
 font-size: 14px;
 color: #444;
-background: rgba(255,255,255,0.3);
+background: rgba(255, 255, 255, 0.3);
 margin-top: 40px;
 }
