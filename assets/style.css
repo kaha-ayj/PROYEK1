@@ -106,3 +106,62 @@ color: #444;
 background: rgba(255, 255, 255, 0.3);
 margin-top: 40px;
 }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #e9f4fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 40px auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px 40px;
+        }
+        h2 { color: #333; }
+        .lapangan-btn {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .lapangan-btn a {
+            text-decoration: none;
+            color: black;
+            padding: 8px 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background: #f8f8f8;
+        }
+        .lapangan-btn a.active {
+            background: #00b4d8;
+            color: white;
+            border-color: #00b4d8;
+        }
+        .jadwal {
+            margin-top: 20px;
+        }
+        .slot {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            width: fit-content;
+        }
+        .sudah {
+            background: #e74c3c;
+            color: white;
+        }
+        .bisa {
+            border: 1px solid #00b4d8;
+            color: #333;
+        }
+        .btn-pilih {
+            background: #00b4d8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
