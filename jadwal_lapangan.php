@@ -13,7 +13,7 @@ $lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Lapangin.Aja - Jadwal Lapangan</title>
+    <title>Jadwal Lapangan</title>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -22,35 +22,67 @@ $lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
             padding: 0;
         }
 
+        /* ===== HEADER / NAVBAR ===== */
         header {
             background: white;
-            padding: 15px 50px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 10px 50px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
         .logo {
-            font-size: 22px;
-            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 300px; /* kecilin logo */
+            height: auto;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
             color: #0a3d62;
         }
 
-        nav a {
-            margin: 0 20px;
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            flex-grow: 1;
+            gap: 40px;
+        }
+
+        .nav-links a {
             text-decoration: none;
-            color: #555;
+            color: #333;
             font-weight: 500;
         }
 
-        .search {
+        .search-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-user input {
             border: 1px solid #ccc;
             border-radius: 20px;
             padding: 6px 12px;
             font-size: 14px;
         }
 
+        .user-icon {
+            font-size: 20px;
+        }
+
+        /* ===== CONTENT ===== */
         .container {
             background: #fff;
             width: 80%;
@@ -79,7 +111,7 @@ $lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
             width: 100%;
             height: 180px;
             border-radius: 8px;
-            background: #dfe6e9; /* kosongin dulu gambarnya */
+            background: #dfe6e9;
         }
 
         .lapangan-list {
@@ -162,13 +194,23 @@ $lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
 </head>
 <body>
     <header>
-        <div class="logo">Lapangin.<span style="color:#48cae4;">Aja</span></div>
         <nav>
-            <a href="#">Lapangan</a>
-            <a href="#">Home</a>
-            <a href="#">Message</a>
+            <div class="logo">
+                <img src="assets/image/logo.png" alt="logo">
+                <span class="logo-text"></span>
+            </div>
+
+            <div class="nav-links">
+                <a href="#">Lapangan</a>
+                <a href="#">Home</a>
+                <a href="#">Message</a>
+            </div>
+
+            <div class="search-user">
+                <input type="text" placeholder="Cari lapangan...">
+                <div class="user-icon"></div>
+            </div>
         </nav>
-        <input type="text" class="search" placeholder="Cari lapangan">
     </header>
 
     <div class="container">
@@ -176,7 +218,7 @@ $lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
         <div class="content">
             <div class="left">
                 <h4>Nama Lapangan</h4>
-                <img src="assets/image/lapangan.png" alt="">
+                <img src="assets/image/lapangan.png" alt="Gambar Lapangan">
                 <div class="lapangan-list">
                     <a href="?lapangan=Lapangan 1" class="<?= $lapanganDipilih == 'Lapangan 1' ? 'active' : '' ?>">Lapangan 1</a>
                     <a href="?lapangan=Lapangan 2" class="<?= $lapanganDipilih == 'Lapangan 2' ? 'active' : '' ?>">Lapangan 2</a>
