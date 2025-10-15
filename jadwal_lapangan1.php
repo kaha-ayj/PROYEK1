@@ -212,7 +212,8 @@ $lapangan = [
 
     <div class="right-section">
         <div class="search">
-            <input type="text" placeholder="Cari lapangan">
+                <input type="text" placeholder="Cari lapangan">
+                🔍
         </div>
         <div class="user-icon">👤</div>
     </div>
