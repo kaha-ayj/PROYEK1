@@ -176,7 +176,7 @@
 
     <!-- ===== FOOTER IMAGE ===== -->
     <footer>
-        <img src="" alt="Logo Shuttlecock"> <!-- Kosongkan dulu gambar -->
+        <img src="assets/image/image 4.png" alt="Logo Shuttlecock"> <!-- Kosongkan dulu gambar -->
     </footer>
 
 </body>
