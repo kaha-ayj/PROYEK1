@@ -23,7 +23,7 @@ include("includes/header.php");
     </div>
 
     <div class="image">
-    <img src="assets/image/pemain.png" alt="pemain Badminton">    
+    <img src="assets/image/image6.png" alt="pemain Badminton">    
     </div>
 </section>
 
