@@ -58,7 +58,15 @@ $stmt->bind_param("sss", $nama, $email, $hashed_password);
 </head>
 
 <body>
-    <?php include("includes/header.php"); ?>
+    <header>
+    <div class="logo">
+    <img src="assets/image/logo.png" alt="Lapangin.Aja Logo">
+    </div>
+    <div class="buttons">
+    <a href="login.php"><button class="login">LOGIN</button></a>
+    <a href="signup.php"><button class="signup">SIGN UP</button></a>
+    </div>
+</header>
 
     <div class="welcome-content">
         <h1 class="welcome-title">Selamat Datang</h1>

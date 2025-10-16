@@ -62,35 +62,46 @@ $booking_terakhir = [
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Lapangin.Aja</title>
+    <title><Home - Lapangin.Aja</title>
     <link rel="stylesheet" href="assets/home.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+<header class="header">
+    <div class="container">
+        <div class="nav">
 
-    <header class="header">
-        <div class="container">
-            <div class="nav">
-                <div class="logo">
-                    <div class="logo-atas"> <img src="assets/image/logo.png" alt="logo lapangin.aja"> </div>
-                </div>
-                <div class="nav-links">
-                    <a href="jadwal_lapangan1.php">Lapangan</a>
-                    <a href="homepage.php" class="active">Home</a>
-                    <a href="messege1.php">Messege</a>
-                    
-                    <?php if(isset($_SESSION['user'])): ?>
-                        <span class="btn-profile">
-                            <i class="fas fa-user"></i> <?= htmlspecialchars($user['nama']); ?>
-                        </span>
-                        <a href="login.php" class="btn-logout">Logout</a>
-                    <?php else: ?>
-                        <a href="login.php" class="btn-login">Login</a>
-                    <?php endif; ?>
+            <div class="logo">
+                <div class="logo-atas">
+                    <img src="assets/image/logo.png" alt="logo lapangin.aja">
                 </div>
             </div>
+
+            <div class="nav-links">
+                <a href="jadwal_lapangan1.php">Lapangan</a>
+                <a href="homepage.php" class="active">Home</a>
+                <a href="messege1.php">Messege</a>
+
+                <div class="right-section">
+                    <div class="search">
+                        <input type="text" placeholder="Cari lapangan...">
+                        <span class="search-icon">🔍</span>
+                    </div>
+                </div>
+
+            <?php if (isset($_SESSION['user'])): ?>
+            <a href="#" class="btn-profile-img">
+                <img src="assets/image/profile.png" alt="Profile"></a>
+                <a href="logout.php" class="btn-logout">Logout</a>
+                <?php else: ?>
+                <a href="login.php" class="btn-login">Login</a>
+                <?php endif; ?>
+
+            </div>
         </div>
-    </header>
+    </div>
+</header>
+    
 
     <!-- Hero Section -->
     <section class="hero">
@@ -105,41 +116,49 @@ $booking_terakhir = [
                     <p> Nggak ada lagi drama cari lapangan badminton kosong. Mau main santai bareng teman atau latihan serius, 
                         semua bisa kamu booking dalam hitungan detik. Saatnya smash tanpa ribet, bareng Lapangin.aja! 🏸⚡</p>
                 <div class="hero-buttons">
-                        <a href="booking.php" class="btn-primary">BOOKING LAPANGANMU!</a>
+                        <a href="jadwal_lapangan1.php" class="btn-primary">BOOKING LAPANGANMU!</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Lapangan Terdekat Section -->
-    <section class="nearby-section">
-        <div class="container">
-            <h2 class="section-title-dark">Lapangan Terdekat</h2>
-            <div class="nearby-grid">
-                <div class="nearby-card">
-                    <div class="nearby-image">
-                        <img src="assets/images/kelapa-gading.jpg" alt="Kelapa Gading" onerror="this.src='https://via.placeholder.com/300x200?text=Kelapa+Gading'">
-                    </div>
-                    <div class="nearby-content">
-                        <h3>Kelapa Gading</h3>
-                        <p><i class="fas fa-map-marker-alt"></i> Jl. Kelapa Gading No. 123</p>
-                        <a href="jadwal_lapangan1.php" class="btn-nearby">LIHAT TERSEDIAANNYA</a>
-                    </div>
+   <section class="nearby-section">
+    <div class="container">
+        <h2 class="section-title-dark">Lapangan Terdekat</h2>
+        <div class="nearby-grid">
+
+            <!-- Box 1 -->
+            <div class="nearby-card">
+                <div class="nearby-content">
+                    <h3>Abral</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Jl. Raya Panyindangan Wetan, Panyindangan Wetan, Kec. Sindang, Kabupaten Indramayu</p>
                 </div>
-                <div class="nearby-card">
-                    <div class="nearby-image">
-                        <img src="assets/images/abral.jpg" alt="Abral" onerror="this.src='https://via.placeholder.com/300x200?text=Abral'">
-                    </div>
-                    <div class="nearby-content">
-                        <h3>Abral</h3>
-                        <p><i class="fas fa-map-marker-alt"></i> Jl. Pahlawan No. 89</p>
-                        <a href="jadwal_lapangan1.php" class="btn-nearby">LIHAT TERSEDIAANNYA</a>
-                    </div>
+                <div class="nearby-image">
+                    <img src="assets/image/lap_KG.png" alt="Abral">
+                </div>
+                <div>
+                    <a href="jadwal_lapangan1.php" class="btn-nearby">LIHAT TERSEDIAANNYA</a>
                 </div>
             </div>
+
+            <div class="nearby-card">
+                <div class="nearby-content">
+                    <h3>Kelapa Gading</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Jl. Raya Panyindangan Wetan, Panyindangan Wetan, Kec. Sindang, Kabupaten Indramayu</p>
+                </div>
+                <div class="nearby-image">
+                    <img src="assets/image/lap_KG.png" alt="Kelapa Gading">
+                </div>
+                <div>
+                    <a href="jadwal_lapangan1.php" class="btn-nearby">LIHAT TERSEDIAANNYA</a>
+                </div>
+            </div>
+
         </div>
-    </section>
+    </div>
+</section>
+
 
     <!-- Riwayat Booking Section -->
     <section class="booking-history">
