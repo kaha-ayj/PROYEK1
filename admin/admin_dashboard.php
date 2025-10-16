@@ -195,7 +195,7 @@ $total_pemasukan = $result_pemasukan->fetch_assoc()['total_pemasukan'] ?? 0;
             <div style="width: 40px; height: 40px; background-color: grey; border-radius: 50%;"></div>
             <div>
                 <strong><?php echo htmlspecialchars($_SESSION['user']['nama']); ?></strong><br>
-                <a href="../logout.php" style="text-decoration:none; color: #E74C3C;">Logout</a>
+                <a href="../login.php" style="text-decoration:none; color: #E74C3C;">Logout</a>
             </div>
         </div>
     </aside>

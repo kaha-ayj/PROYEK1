@@ -75,9 +75,9 @@ $booking_terakhir = [
                     <div class="logo-atas"> <img src="assets/image/logo.png" alt="logo lapangin.aja"> </div>
                 </div>
                 <div class="nav-links">
-                    <a href="lapangan.php">Lapangan</a>
+                    <a href="jadwal_lapangan1.php">Lapangan</a>
                     <a href="homepage.php" class="active">Home</a>
-                    <a href="#.php">Messege</a>
+                    <a href="messege1.php">Messege</a>
                     
                     <?php if(isset($_SESSION['user'])): ?>
                         <span class="btn-profile">
@@ -124,7 +124,7 @@ $booking_terakhir = [
                     <div class="nearby-content">
                         <h3>Kelapa Gading</h3>
                         <p><i class="fas fa-map-marker-alt"></i> Jl. Kelapa Gading No. 123</p>
-                        <a href="booking.php" class="btn-nearby">LIHAT TERSEDIAANNYA</a>
+                        <a href="jadwal_lapangan1.php" class="btn-nearby">LIHAT TERSEDIAANNYA</a>
                     </div>
                 </div>
                 <div class="nearby-card">
@@ -134,7 +134,7 @@ $booking_terakhir = [
                     <div class="nearby-content">
                         <h3>Abral</h3>
                         <p><i class="fas fa-map-marker-alt"></i> Jl. Pahlawan No. 89</p>
-                        <a href="booking.php" class="btn-nearby">LIHAT TERSEDIAANNYA</a>
+                        <a href="jadwal_lapangan1.php" class="btn-nearby">LIHAT TERSEDIAANNYA</a>
                     </div>
                 </div>
             </div>

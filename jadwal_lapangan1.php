@@ -206,8 +206,8 @@ $lapangan = [
 
     <nav class="navbar">
         <a href="#">Lapangan</a>
-        <a href="#">Home</a>
-        <a href="#">Message</a>
+        <a href="homepage.php">Home</a>
+        <a href="messege1.php">Message</a>
     </nav>
 
     <div class="right-section">
@@ -224,6 +224,7 @@ $lapangan = [
     <h2>Jadwal Lapangan</h2>
     <div class="filter">Pilih lokasi</div>
 
+
     <div class="lapangan-container">
         <?php foreach ($lapangan as $l): ?>
         <div class="card">
@@ -231,7 +232,9 @@ $lapangan = [
             <div class="card-content">
                 <h3><?php echo $l['nama']; ?></h3>
                 <p><?php echo $l['deskripsi']; ?></p>
-                <div class="lihat-jadwal">Lihat Jadwal <span>›</span></div>
+                <div class="lihat-jadwal"> 
+                    <a href="jadwal_lapangan2.php" class="btn-nearby"> Lihat Jadwal ›</a> 
+            </div>
             </div>
         </div>
         <?php endforeach; ?>

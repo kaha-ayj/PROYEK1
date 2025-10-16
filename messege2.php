@@ -242,9 +242,9 @@
         <h2></h2>
     </div>
     <div class="menu">
-        <a href="#">Lapangan</a>
-        <a href="#">Home</a>
-        <a href="#" class="active">Message</a>
+        <a href="jadwal_lapangan1.php">Lapangan</a>
+        <a href="homepage.php">Home</a>
+        <a href="messege1.php" class="active">Message</a>
         <div class="search">
             <input type="text" placeholder="Cari lapangan">
             🔍
