@@ -145,9 +145,9 @@
         </div>
         <ul>
     <div class="menu">
-            <a href="#">Lapangan</a>
-            <a href="#">Home</a>
-            <a href="#" class="active">Message</a>
+            <a href="jadwal_lapangan1.php">Lapangan</a>
+            <a href="homepage.php">Home</a>
+            <a href="messege1.php" class="active">Message</a>
             <div class="search">
                 <input type="text" placeholder="Cari lapangan">
                 🔍
@@ -165,7 +165,7 @@
             <img src="assets/image/image 49.png" alt="Admin">
             <div class="info">
                 <div class="name">Reinayla</div>
-                <div class="message">Ada kesulitan? chat dengan admin</div>
+                <div class="message"><a href="messege2.php">Ada kesulitan? chat dengan admin <span>></span></a></div>
             </div>
         </div>
     </div>

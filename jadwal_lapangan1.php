@@ -37,71 +37,89 @@ $lapangan = [
             background: linear-gradient(to bottom right, #d9e7e9, #a6bcc0);
         }
 
-        /* Header */
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(255, 255, 255, 0.5);
-            padding: 15px 40px;
-            backdrop-filter: blur(5px);
-        }
+.header {
+padding: 15px 0;
+box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+position: sticky;
+top: 1;
+border-bottom: 2px solid #e0e0e0; 
+z-index: 1000; 
+}
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+.nav { 
+    display: flex;
+    justify-content: space-between;
+    height: 30px; align-items: center; 
+}
 
-        .logo img {
-            width: 300px;
-        }
+.logo {
+    display: flex; 
+    align-items: center;
+} 
+.logo-atas { 
+    height: 60px;
+    width: auto;
+} 
+.logo-atas img { 
+    height: 100%;
+    width: auto; 
+    object-fit: contain; 
+}
 
-        .logo h1 {
-            font-size: 22px;
-            color: #1c3366;
-        }
+.nav-links { 
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+.nav-links a { 
+    font-family: 'Poppins', sans-serif;
+    color: #5d7b87;
+    color:linear-gradient (#4C5C5A #A1C2BD);
+    text-decoration: none; 
+    font-weight: 700;
+    transition: color 0.3s;
+} 
 
-        nav {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-        }
+.nav-links a:hover, .nav-links a.active{
+    color: #6d6666; 
+}
+.btn-profile-img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+}
 
-        nav a {
-            text-decoration: none;
-            color: #6b7a89;
-            font-weight: 600;
-        }
+.btn-profile-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
-        nav a:hover {
-            color: #1c3366;
-        }
+.btn-profile-img:hover {
+    transform: scale(1.05);
+}
 
-        .search {
-            background: white;
-            border-radius: 20px;
-            padding: 5px 10px;
-            display: flex;
-            align-items: center;
-        }
+.right-section {
+    border-radius: 10px;
+}
 
-        .search input {
-            border: none;
-            outline: none;
-            padding: 5px;
-            font-style: italic;
-        }
+.btn-logout { 
+    background: #ca4250; 
+    color: white !important;
+    padding: 8px 10px; 
+    border-radius: 5px; 
+    transition: background 0.3s;
+    font-size: 10px;
 
-        .user-icon {
-            width: 35px;
-            height: 35px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+} 
+
+.btn-logout:hover {
+    background: #000000; }
 
         /* Konten utama */
         main {
@@ -197,32 +215,46 @@ $lapangan = [
     </style>
 </head>
 <body>
+<header class="header">
+    <div class="container">
+        <div class="nav">
 
-<header>
-    <div class="logo">
-        <img src="assets/image/logo.png" alt="Logo">
-        <h1><span style="color:#1c3366;"></span><span style="color:#4773ff;"></span></h1>
-    </div>
+            <div class="logo">
+                <div class="logo-atas">
+                    <img src="assets/image/logo.png" alt="logo lapangin.aja">
+                </div>
+            </div>
 
-    <nav class="navbar">
-        <a href="#">Lapangan</a>
-        <a href="#">Home</a>
-        <a href="#">Message</a>
-    </nav>
+            <div class="nav-links">
+                <a href="jadwal_lapangan1.php">Lapangan</a>
+                <a href="homepage.php" class="active">Home</a>
+                <a href="messege1.php">Messege</a>
 
-    <div class="right-section">
-        <div class="search">
-                <input type="text" placeholder="Cari lapangan">
-                🔍
+                <div class="right-section">
+                    <div class="search">
+                        <input type="text" placeholder="Cari lapangan...">
+                        <span class="search-icon">🔍</span>
+                    </div>
+                </div>
+
+                <?php if (isset($_SESSION['user'])): ?>
+                    <a href="#" class="btn-profile-img">
+                        <img src="assets/image/profile.png" alt="Profile">
+                    </a>
+                    <a href="login.php" class="btn-login">Login</a>
+                <?php else: ?>
+                <a href="login.php" class="btn-logout">Logout</a>
+                <?php endif; ?>
+            </div>
         </div>
-        <div class="user-icon">👤</div>
     </div>
 </header>
-
+    
 
 <main>
     <h2>Jadwal Lapangan</h2>
     <div class="filter">Pilih lokasi</div>
+
 
     <div class="lapangan-container">
         <?php foreach ($lapangan as $l): ?>
@@ -231,7 +263,9 @@ $lapangan = [
             <div class="card-content">
                 <h3><?php echo $l['nama']; ?></h3>
                 <p><?php echo $l['deskripsi']; ?></p>
-                <div class="lihat-jadwal">Lihat Jadwal <span>›</span></div>
+                <div class="lihat-jadwal"> 
+                    <a href="jadwal_lapangan2.php" class="btn-nearby"> Lihat Jadwal ›</a> 
+            </div>
             </div>
         </div>
         <?php endforeach; ?>

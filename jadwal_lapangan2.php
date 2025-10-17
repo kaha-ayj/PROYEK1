@@ -1,5 +1,7 @@
 <?php
-// Data jadwal dummy (biasanya nanti dari database)
+session_start();
+
+// Data jadwal dummy
 $jadwal = [
     ["lapangan" => "Lapangan 1", "tanggal" => "2025-09-25", "jam" => "09.00 - 10.00", "status" => "sudah"],
     ["lapangan" => "Lapangan 2", "tanggal" => "2025-09-25", "jam" => "09.00 - 10.00", "status" => "bisa"],
@@ -13,7 +15,7 @@ $lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Jadwal Lapangan</title>
+    <title>Lapangin.Aja | Jadwal Lapangan</title>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -22,64 +24,114 @@ $lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
             padding: 0;
         }
 
-        /* ===== HEADER / NAVBAR ===== */
-        header {
-            background: white;
-            padding: 10px 50px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        /* ===== HEADER ===== */
+        .header {
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        nav {
+        .nav {
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
         }
 
-        .logo img {
-            width: 300px; /* kecilin logo */
-            height: auto;
+        .logo-atas {
+            height: 60px;
+            width: auto;
         }
 
-        .logo-text {
-            font-size: 24px;
-            font-weight: 700;
-            color: #0a3d62;
+        .logo-atas img {
+            height: 100%;
+            width: auto;
+            object-fit: contain;
+
         }
 
         .nav-links {
             display: flex;
-            justify-content: center;
-            flex-grow: 1;
-            gap: 40px;
+            align-items: center;
+            gap: 25px;
         }
 
         .nav-links a {
+            color: #5d7b87;
             text-decoration: none;
-            color: #333;
-            font-weight: 500;
+            font-weight: 700;
+            transition: color 0.3s;
         }
 
-        .search-user {
+        .nav-links a:hover, .nav-links a.active {
+            color: #6d6666;
+        }
+
+        .right-section {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .search-user input {
-            border: 1px solid #ccc;
+        .search {
+            display: flex;
+            align-items: center;
+            background: #f0f0f0;
+            padding: 5px 10px;
             border-radius: 20px;
-            padding: 6px 12px;
-            font-size: 14px;
         }
 
-        .user-icon {
-            font-size: 20px;
+        .search input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 14px;
+            width: 120px;
+        }
+
+        .search-icon {
+            margin-left: 5px;
+        }
+
+        .btn-profile-img {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-profile-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn-profile-img:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-logout {
+            background: #ca4250;
+            color: white !important;
+            padding: 8px 10px;
+            border-radius: 5px;
+            transition: background 0.3s;
+            font-size: 10px;
+            text-decoration: none;
+        }
+
+        .btn-logout:hover {
+            background: #000;
         }
 
         /* ===== CONTENT ===== */
@@ -190,31 +242,49 @@ $lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
             margin-top: 20px;
             cursor: pointer;
         }
+
+        .btn-pilih:hover {
+            background: #38b1cc;
+        }
     </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">
-                <img src="assets/image/logo.png" alt="logo">
-                <span class="logo-text"></span>
-            </div>
 
-            <div class="nav-links">
-                <a href="#">Lapangan</a>
-                <a href="#">Home</a>
-                <a href="#">Message</a>
+<header class="header">
+    <div class="nav">
+        <div class="logo">
+            <div class="logo-atas">
+                <img src="assets/image/logo.png" alt="logo lapangin.aja">
             </div>
+        </div>
 
-            <div class="search-user">
+        <div class="nav-links">
+            <a href="jadwal_lapangan1.php">Lapangan</a>
+            <a href="homepage.php" class="active">Home</a>
+            <a href="messege1.php">Messege</a>
+        </div>
+
+        <div class="right-section">
+            <div class="search">
                 <input type="text" placeholder="Cari lapangan...">
-                <div class="user-icon"></div>
+                <span class="search-icon">🔍</span>
             </div>
-        </nav>
-    </header>
 
+            <?php if (isset($_SESSION['user'])): ?>
+                <a href="#" class="btn-profile-img">
+                    <img src="assets/image/profile.png" alt="Profile">
+                </a>
+                <a href="logout.php" class="btn-logout">Logout</a>
+            <?php else: ?>
+                <a href="login.php" class="btn-login">Login</a>
+            <?php endif; ?>
+        </div>
+    </div>
+</header>
+
+<section class="hero">
     <div class="container">
-        <h3>PILIH TANGGAL DAN JADWAL</h3>
+        <h3>Pilih Tanggal dan Jadwal</h3>
         <div class="content">
             <div class="left">
                 <h4>Nama Lapangan</h4>
@@ -228,6 +298,7 @@ $lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
 
             <div class="right">
                 <div class="tanggal"><?= date("d F Y", strtotime($tanggalDipilih)) ?></div>
+
                 <?php
                 foreach ($jadwal as $j) {
                     if ($j['lapangan'] == $lapanganDipilih && $j['tanggal'] == $tanggalDipilih) {
@@ -239,17 +310,18 @@ $lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
                 ?>
 
                 <div class="calendar">
-                    <?php
-                    for ($i = 1; $i <= 30; $i++) {
-                        $selected = ($i == 25) ? "selected" : "";
-                        echo "<div class='$selected'>$i</div>";
-                    }
-                    ?>
+                    <?php for ($i = 1; $i <= 30; $i++): ?>
+                        <div class="<?= $i == 25 ? 'selected' : '' ?>"><?= $i ?></div>
+                    <?php endfor; ?>
                 </div>
 
-                <button class="btn-pilih">Pilih Jadwal</button>
+                <a href="pembayaran1.php">
+                    <button class="btn-pilih">Pilih Jadwal</button>
+                </a>
             </div>
         </div>
     </div>
+</section>
+
 </body>
 </html>
