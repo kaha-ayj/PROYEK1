@@ -62,7 +62,7 @@ $booking_terakhir = [
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><Home - Lapangin.Aja</title>
+    <title> Home - Lapangin.Aja</title>
     <link rel="stylesheet" href="assets/home.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -121,18 +121,16 @@ $booking_terakhir = [
                 </div>
             </div>
         </div>
-    </section>
 
-   <section class="nearby-section">
     <div class="container">
         <h2 class="section-title-dark">Lapangan Terdekat</h2>
         <div class="nearby-grid">
 
-            <!-- Box 1 -->
             <div class="nearby-card">
                 <div class="nearby-content">
                     <h3>Abral</h3>
-                    <p><i class="fas fa-map-marker-alt"></i> Jl. Raya Panyindangan Wetan, Panyindangan Wetan, Kec. Sindang, Kabupaten Indramayu</p>
+                    <p> <img src="assets/image/image 10.png"> 
+                    <i class="alamat"></i> Jl. Raya Panyindangan Wetan, Panyindangan Wetan, Kec. Sindang, Kabupaten Indramayu</p>
                 </div>
                 <div class="nearby-image">
                     <img src="assets/image/lap_KG.png" alt="Abral">
@@ -142,10 +140,11 @@ $booking_terakhir = [
                 </div>
             </div>
 
-            <div class="nearby-card">
+            <div class="nearby-card2">
                 <div class="nearby-content">
                     <h3>Kelapa Gading</h3>
-                    <p><i class="fas fa-map-marker-alt"></i> Jl. Raya Panyindangan Wetan, Panyindangan Wetan, Kec. Sindang, Kabupaten Indramayu</p>
+                    <p><img src="assets/image/image 10.png"> 
+                    <i class="alamat"></i> Jl. Raya Panyindangan Wetan, Panyindangan Wetan, Kec. Sindang, Kabupaten Indramayu</p>
                 </div>
                 <div class="nearby-image">
                     <img src="assets/image/lap_KG.png" alt="Kelapa Gading">
@@ -154,7 +153,6 @@ $booking_terakhir = [
                     <a href="jadwal_lapangan1.php" class="btn-nearby">LIHAT TERSEDIAANNYA</a>
                 </div>
             </div>
-
         </div>
     </div>
 </section>
@@ -172,7 +170,7 @@ $booking_terakhir = [
                     </div>
                     <div class="history-details">
                         <p><i class="fas fa-calendar"></i> Sabtu, 18.02 - 19.00</p>
-                        <p><i class="fas fa-clock"></i> 10/09/2024</p>
+                        <p><i class="fas fa-clock"></i> 10/09/2025</p>
                     </div>
                 </div>
                 <div class="history-card">
@@ -182,7 +180,7 @@ $booking_terakhir = [
                     </div>
                     <div class="history-details">
                         <p><i class="fas fa-calendar"></i> Minggu, 18.02 - 18.00</p>
-                        <p><i class="fas fa-clock"></i> 20/09/2024</p>
+                        <p><i class="fas fa-clock"></i> 20/09/2025</p>
                     </div>
                 </div>
                 <div class="history-card">
@@ -192,7 +190,7 @@ $booking_terakhir = [
                     </div>
                     <div class="history-details">
                         <p><i class="fas fa-calendar"></i> Jumat, 19.00 - 20.00</p>
-                        <p><i class="fas fa-clock"></i> 23/09/2024</p>
+                        <p><i class="fas fa-clock"></i> 23/09/2025</p>
                     </div>
                 </div>
             </div>
