@@ -79,14 +79,14 @@
         .container {
             display: flex;
             justify-content: center;
-            margin-top: 70px;
+            margin-top: 80px;
         }
 
         .card {
             background: #eaf1ef;
             width: 75%;
-            max-width: 850px;
-            padding: 40px 50px;
+            max-width: 900px;
+            padding: 100px 50px;
             border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             display: flex;
