@@ -25,7 +25,7 @@ $total_pemasukan = $result_pemasukan->fetch_assoc()['total_pemasukan'] ?? 0;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin - Lapangin.Aja</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-   <style>
+<style>
         :root {
             --sidebar-bg: #DDEBFB;
             --main-bg: #F7F9FC;
@@ -190,6 +190,8 @@ $total_pemasukan = $result_pemasukan->fetch_assoc()['total_pemasukan'] ?? 0;
             <a href="konfirmasi.php">Order</a>
             <a href="jadwal.php">Jadwal</a>
             <a href="lapangan.php">Lapangan</a>
+        
+
         </nav>
         <div class="profile">
             <div style="width: 40px; height: 40px; background-color: grey; border-radius: 50%;"></div>

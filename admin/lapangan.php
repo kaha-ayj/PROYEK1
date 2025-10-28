@@ -1,11 +1,9 @@
 <?php
 session_start();
-// Arahkan ke login jika user bukan admin
-// if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
-//     header("Location: ../login.php");
-//     exit();
-// }
-
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != 'admin') {
+    header("Location: ../login.php");
+    exit();
+}
 include '../config/koneksi.php';
 
 // Inisialisasi variabel untuk form edit

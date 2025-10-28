@@ -1,11 +1,10 @@
 <?php
 session_start();
 // Arahkan ke halaman login jika pengguna belum login atau bukan admin.
-if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
+if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != 'admin') {
     header("Location: ../login.php");
     exit();
 }
-
 include '../config/koneksi.php';
 
 // Query untuk mengambil data jadwal yang digabungkan dengan data lapangan
