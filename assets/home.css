@@ -262,13 +262,12 @@ body {
 /* Nearby Section */
 .nearby-section {
     padding: 10px 0;
-    gap: 0px;
 }
 
 .nearby-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px; 
+    gap: 20px; 
 }
 
 .nearby-cards{
@@ -321,8 +320,6 @@ body {
     align-items: center;    
     object-fit: cover;
 }
-
-
 
 .nearby-content {
     padding: 20px;
@@ -440,6 +437,13 @@ body {
     display: flex;
     flex-direction: column; 
 
+}
+
+@media (max-width: 768px) {
+    .nearby-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
 }
 /* Schedule Section */
 .schedule-section {

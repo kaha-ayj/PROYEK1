@@ -5,48 +5,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nama = $_POST['nama'];
     $email = $_POST['email'];
     $password = $_POST['password'];
-
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    // cek email
-   // cek email
-$stmt = $conn->prepare("SELECT password FROM pengguna WHERE email = ?");
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$result = $stmt->get_result();
+    // Cek apakah email sudah terdaftar
+    $stmt = $conn->prepare("SELECT password FROM pengguna WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-if ($row = $result->fetch_assoc()) {
-    // cek apakah password lama belum di-hash (tidak mengandung '$2y$')
-    if (strpos($row['password'], '$2y$') === false) {
-        // update password lama jadi hash baru
-        $stmt_update = $conn->prepare("UPDATE pengguna SET password=? WHERE email=?");
-        $stmt_update->bind_param("ss", $hashed_password, $email);
-        $stmt_update->execute();
-        $stmt_update->close();
-        header("Location: login.php");
-        exit;
-    } else {
-        echo "<script>alert('Email sudah terdaftar!'); window.location='login.php';</script>";
+    if ($row = $result->fetch_assoc()) {
+        echo "<script>alert('Email sudah terdaftar!'); window.location='signup.php';</script>";
         exit;
     }
-}
 
-    // insert data
+    // Insert data baru
     $stmt = $conn->prepare("INSERT INTO pengguna (nama, email, password, role) VALUES (?, ?, ?, 'penyewa')");
-$stmt->bind_param("sss", $nama, $email, $hashed_password);
+    $stmt->bind_param("sss", $nama, $email, $hashed_password);
 
     if ($stmt->execute()) {
-        // langsung ke login tanpa alert
         header("Location: login.php");
         exit;
     } else {
-        echo "Error: " . $stmt->error;
+        echo "<script>alert('Terjadi kesalahan saat mendaftar.'); window.location='signup.php';</script>";
     }
+
     $stmt->close();
 }
-
 ?>
-
 
 <!DOCTYPE html>
 <html lang="id">
@@ -55,38 +40,75 @@ $stmt->bind_param("sss", $nama, $email, $hashed_password);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lapangin.Aja | Sign Up</title>
     <link rel="stylesheet" href="assets/style.css">
+    <style>
+    body {
+        background: linear-gradient(to bottom right, #E7F2EF 50%, #708993 -50%);
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 100px);
+        padding: 1px;
+        position: relative; 
+    }
+
+    .welcome-content {
+        text-align: center;
+        margin-bottom: 1px;
+        margin-top: -20px;
+    }
+
+    .right-panel {
+        background-color: var(--white);
+        border-radius: var(--border-radius);
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 400px;
+        margin-bottom: 300px;
+        z-index: 2; 
+    }
+
+
+    .player-image {
+        width: 300px;
+        max-width: 90%;
+        height: auto;
+        position: absolute;
+        right: 60px;   
+        bottom: 50px;  
+    }
+    </style>
 </head>
 
 <body>
     <header>
-    <div class="logo">
-    <img src="assets/image/logo.png" alt="Lapangin.Aja Logo">
-    </div>
-    <div class="buttons">
-    <a href="login.php"><button class="login">LOGIN</button></a>
-    <a href="signup.php"><button class="signup">SIGN UP</button></a>
-    </div>
-</header>
+        <div class="logo">
+            <img src="assets/image/logo.png" alt="Lapangin.Aja Logo">
+        </div>
+        <div class="buttons">
+            <a href="login.php"><button class="login">LOGIN</button></a>
+            <a href="signup.php"><button class="signup">SIGN UP</button></a>
+        </div>
+    </header>
 
-    <div class="welcome-content">
-        <h1 class="welcome-title">Selamat Datang</h1>
-        <p class="welcome-subtitle">Daftarkan Akun anda dan Mulai menggunakan Layanan Kami</p>
-    </div>
-
-    <img src="assets/image/image2.png" alt="A badminton player celebrating a point" class="player-image">
-
-    <div class="right-panel">
-        <nav class="auth-nav">
-            <a href="login.php" class="auth-btn login-btn">LOGIN</a>
-            <a href="#" class="auth-btn signup-btn active">SIGN UP</a>
-        </nav>
+    <div class="main-container">
+        <div class="welcome-content">
+            <h1 class="welcome-title">Selamat Datang</h1>
+            <p class="welcome-subtitle">Daftarkan akun anda untuk mulai menggunakan layanan kami</p>
+        </div>
 
         <div class="form-container">
             <h2 class="form-title">Buat Akun</h2>
             <img src="assets/image/google.png" alt="Google logo" class="google-logo">
-            <p class="google-text">atau gunakan akun google anda untuk registrasi</p>
+            <p class="google-text">atau gunakan akun Google anda untuk registrasi</p>
 
-            <!-- form dihubungkan dengan PHP di atas -->
             <form class="registration-form" method="POST" action="">
                 <div class="form-group">
                     <input type="text" name="nama" class="form-input" placeholder="Nama" required>
@@ -103,6 +125,9 @@ $stmt->bind_param("sss", $nama, $email, $hashed_password);
                 </div>
             </form>
         </div>
+
+        <!-- gambar sekarang di kanan -->
+        <img src="assets/image/image2.png" alt="A badminton player celebrating a point" class="player-image">
     </div>
 </body>
 </html>

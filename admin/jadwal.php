@@ -167,7 +167,7 @@ $result = $conn->query($sql);
         <div class="profile">
             <div style="width: 40px; height: 40px; background-color: #8A92A6; border-radius: 50%;"></div>
             <div>
-                <strong><?php echo htmlspecialchars($_SESSION['nama']); ?></strong><br>
+                <strong><?php echo htmlspecialchars($_SESSION['user']['nama']); ?></strong>
                 <a href="../logout.php" style="text-decoration:none; color: #E74C3C; font-size: 14px;">Logout</a>
             </div>
         </div>

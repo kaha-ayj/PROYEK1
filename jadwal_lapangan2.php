@@ -1,18 +1,13 @@
 <?php
 session_start();
 
-// Data jadwal dummy
-$jadwal = [
-    ["lapangan" => "Lapangan 1", "tanggal" => "2025-09-25", "jam" => "09.00 - 10.00", "status" => "sudah"],
-    ["lapangan" => "Lapangan 2", "tanggal" => "2025-09-25", "jam" => "09.00 - 10.00", "status" => "bisa"],
-    ["lapangan" => "Lapangan 3", "tanggal" => "2025-09-25", "jam" => "09.00 - 10.00", "status" => "bisa"]
-];
-
-$tanggalDipilih = isset($_GET['tanggal']) ? $_GET['tanggal'] : '2025-09-25';
-$lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
+// ====== DATA DEFAULT ======
+$tanggalDipilih = $_GET['tanggal'] ?? '2025-09-25';
+$lapanganDipilih = $_GET['lapangan'] ?? 'Lapangan 1';
 ?>
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <title>Lapangin.Aja | Jadwal Lapangan</title>
@@ -24,16 +19,24 @@ $lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
             padding: 0;
         }
 
-        /* ===== HEADER ===== */
+        .container {
+            background: #fff;
+            width: 80%;
+            margin: 40px auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
         .header {
-            padding: 15px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 5px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
             position: sticky;
             top: 0;
             z-index: 1000;
         }
 
-        .nav {
+       .nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -45,7 +48,7 @@ $lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
         }
 
         .logo-atas {
-            height: 60px;
+            height: 55px;
             width: auto;
         }
 
@@ -96,15 +99,15 @@ $lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
         }
 
         .search-icon {
-            margin-left: 5px;
+            margin-left: 100px;
         }
 
         .btn-profile-img {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             overflow: hidden;
             transition: transform 0.2s ease;
@@ -133,17 +136,6 @@ $lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
         .btn-logout:hover {
             background: #000;
         }
-
-        /* ===== CONTENT ===== */
-        .container {
-            background: #fff;
-            width: 80%;
-            margin: 40px auto;
-            border-radius: 10px;
-            box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
-            padding: 30px;
-        }
-
         h3 {
             margin-bottom: 20px;
             color: #333;
@@ -164,10 +156,6 @@ $lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
             height: 180px;
             border-radius: 8px;
             background: #dfe6e9;
-        }
-
-        .lapangan-list {
-            margin-top: 15px;
         }
 
         .lapangan-list a {
@@ -201,6 +189,7 @@ $lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 10px;
+            text-align: center;
         }
 
         .sudah {
@@ -220,16 +209,29 @@ $lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
             gap: 10px;
         }
 
-        .calendar div {
+        .calendar-day {
             text-align: center;
             padding: 10px;
             border-radius: 50%;
             background: #f1f1f1;
-            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+            transition: background 0.3s;
         }
 
-        .calendar .selected {
+        .calendar-day:hover {
             background: #48cae4;
+            color: white;
+        }
+
+        .calendar-day.selected {
+            background: #48cae4;
+            color: white;
+            font-weight: bold;
+        }
+
+        .calendar-day.sudah {
+            background: #e74c3c;
             color: white;
         }
 
@@ -248,51 +250,52 @@ $lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
         }
     </style>
 </head>
+
 <body>
-
-<header class="header">
     <div class="nav">
-        <div class="logo">
-            <div class="logo-atas">
-                <img src="assets/image/logo.png" alt="logo lapangin.aja">
-            </div>
-        </div>
 
-        <div class="nav-links">
-            <a href="jadwal_lapangan1.php">Lapangan</a>
-            <a href="homepage.php" class="active">Home</a>
-            <a href="messege1.php">Messege</a>
-        </div>
-
-        <div class="right-section">
-            <div class="search">
-                <input type="text" placeholder="Cari lapangan...">
-                <span class="search-icon">🔍</span>
+            <div class="logo">
+                <div class="logo-atas">
+                    <img src="assets/image/logo.png" alt="logo lapangin.aja">
+                </div>
             </div>
+
+            <div class="nav-links">
+                <a href="jadwal_lapangan1.php">Lapangan</a>
+                <a href="homepage.php" class="active">Home</a>
+                <a href="messege1.php">Messege</a>
+
+                <div class="right-section">
+                    <div class="search">
+                        <input type="text" placeholder="Cari lapangan...">
+                        <span class="search-icon">🔍</span>
+                    </div>
+                </div>
 
             <?php if (isset($_SESSION['user'])): ?>
-                <a href="#" class="btn-profile-img">
-                    <img src="assets/image/profile.png" alt="Profile">
-                </a>
+            <a href="#" class="btn-profile-img">
+                <img src="assets/image/profile.png" alt="Profile"></a>
                 <a href="logout.php" class="btn-logout">Logout</a>
-            <?php else: ?>
+                <?php else: ?>
                 <a href="login.php" class="btn-login">Login</a>
-            <?php endif; ?>
-        </div>
-    </div>
-</header>
+                <?php endif; ?>
 
-<section class="hero">
+            </div>
+        </div>
     <div class="container">
         <h3>Pilih Tanggal dan Jadwal</h3>
         <div class="content">
             <div class="left">
                 <h4>Nama Lapangan</h4>
-                <img src="assets/image/lapangan.png" alt="Gambar Lapangan">
+                <img src="assets/image/lapangan.png" alt="Lapangan">
                 <div class="lapangan-list">
-                    <a href="?lapangan=Lapangan 1" class="<?= $lapanganDipilih == 'Lapangan 1' ? 'active' : '' ?>">Lapangan 1</a>
-                    <a href="?lapangan=Lapangan 2" class="<?= $lapanganDipilih == 'Lapangan 2' ? 'active' : '' ?>">Lapangan 2</a>
-                    <a href="?lapangan=Lapangan 3" class="<?= $lapanganDipilih == 'Lapangan 3' ? 'active' : '' ?>">Lapangan 3</a>
+                    <?php
+                    $lapanganList = ['Lapangan 1', 'Lapangan 2', 'Lapangan 3'];
+                    foreach ($lapanganList as $lap) {
+                        $active = ($lapanganDipilih == $lap) ? 'active' : '';
+                        echo "<a href='?lapangan=" . urlencode($lap) . "' class='$active'>$lap</a>";
+                    }
+                    ?>
                 </div>
             </div>
 
@@ -300,28 +303,47 @@ $lapanganDipilih = isset($_GET['lapangan']) ? $_GET['lapangan'] : 'Lapangan 2';
                 <div class="tanggal"><?= date("d F Y", strtotime($tanggalDipilih)) ?></div>
 
                 <?php
-                foreach ($jadwal as $j) {
-                    if ($j['lapangan'] == $lapanganDipilih && $j['tanggal'] == $tanggalDipilih) {
-                        $class = $j['status'] == 'sudah' ? 'sudah' : 'bisa';
-                        $text = $j['status'] == 'sudah' ? 'Sudah Dibooking' : 'Bisa Dibooking';
-                        echo "<div class='slot $class'>$text<br><b>{$j['jam']}</b></div>";
-                    }
+                $status = $_SESSION['booked'][$lapanganDipilih][$tanggalDipilih] ?? false;
+                if ($status) {
+                    echo "<div class='slot sudah'>Sudah Dibooking<br><b>09.00 - 10.00</b></div>";
+                } else {
+                    echo "<div class='slot bisa'>Bisa Dibooking<br><b>09.00 - 10.00</b></div>";
                 }
                 ?>
 
                 <div class="calendar">
-                    <?php for ($i = 1; $i <= 30; $i++): ?>
-                        <div class="<?= $i == 25 ? 'selected' : '' ?>"><?= $i ?></div>
-                    <?php endfor; ?>
+                    <?php
+                    $tahun = date('Y', strtotime($tanggalDipilih));
+                    $bulan = date('m', strtotime($tanggalDipilih));
+                    $totalHari = cal_days_in_month(CAL_GREGORIAN, $bulan, $tahun);
+
+                    for ($i = 1; $i <= $totalHari; $i++):
+                        $tanggal = sprintf("%04d-%02d-%02d", $tahun, $bulan, $i);
+                        $selected = ($tanggal == $tanggalDipilih);
+                        $sudah = isset($_SESSION['booked'][$lapanganDipilih][$tanggal]);
+                        $class = "calendar-day";
+                        if ($selected)
+                            $class .= " selected";
+                        if ($sudah)
+                            $class .= " sudah";
+
+                        echo "<a href='?tanggal={$tanggal}&lapangan=" . urlencode($lapanganDipilih) . "' class='$class'>$i</a>";
+                    endfor;
+                    ?>
                 </div>
 
-                <a href="pembayaran1.php">
-                    <button class="btn-pilih">Pilih Jadwal</button>
-                </a>
+                <?php if (!($status)): ?>
+                    <a href="pembayaran1.php?tanggal=<?= $tanggalDipilih ?>&lapangan=<?= urlencode($lapanganDipilih) ?>">
+                        <button class="btn-pilih">Lanjut ke Pembayaran</button>
+                    </a>
+
+
+                <?php else: ?>
+                    <button class="btn-pilih" style="background:#aaa; cursor:not-allowed;">Sudah Dibooking</button>
+                <?php endif; ?>
             </div>
         </div>
     </div>
-</section>
-
 </body>
+
 </html>

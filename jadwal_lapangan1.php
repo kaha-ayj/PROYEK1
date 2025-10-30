@@ -38,89 +38,113 @@ $lapangan = [
         }
 
 .header {
-padding: 15px 0;
-box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-position: sticky;
-top: 1;
-border-bottom: 2px solid #e0e0e0; 
-z-index: 1000; 
-}
+    padding: 5px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+        }
 
-.nav { 
-    display: flex;
-    justify-content: space-between;
-    height: 30px; align-items: center; 
-}
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-.logo {
-    display: flex; 
-    align-items: center;
-} 
-.logo-atas { 
-    height: 60px;
-    width: auto;
-} 
-.logo-atas img { 
-    height: 100%;
-    width: auto; 
-    object-fit: contain; 
-}
+        .logo {
+            display: flex;
+            align-items: center;
+        }
 
-.nav-links { 
-    display: flex;
-    gap: 25px;
-    align-items: center;
-}
-.nav-links a { 
-    font-family: 'Poppins', sans-serif;
-    color: #5d7b87;
-    color:linear-gradient (#4C5C5A #A1C2BD);
-    text-decoration: none; 
-    font-weight: 700;
-    transition: color 0.3s;
-} 
+        .logo-atas {
+            height: 55px;
+            width: auto;
+        }
 
-.nav-links a:hover, .nav-links a.active{
-    color: #6d6666; 
-}
-.btn-profile-img {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    overflow: hidden;
-    transition: transform 0.2s ease;
-}
+        .logo-atas img {
+            height: 100%;
+            width: auto;
+            object-fit: contain;
 
-.btn-profile-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+        }
 
-.btn-profile-img:hover {
-    transform: scale(1.05);
-}
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
 
-.right-section {
-    border-radius: 10px;
-}
+        .nav-links a {
+            color: #5d7b87;
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.3s;
+        }
 
-.btn-logout { 
-    background: #ca4250; 
-    color: white !important;
-    padding: 8px 10px; 
-    border-radius: 5px; 
-    transition: background 0.3s;
-    font-size: 10px;
+        .nav-links a:hover, .nav-links a.active {
+            color: #6d6666;
+        }
 
-} 
+        .right-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-.btn-logout:hover {
-    background: #000000; }
+        .search {
+            display: flex;
+            align-items: center;
+            background: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
 
+        .search input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 14px;
+            width: 120px;
+        }
+
+        .search-icon {
+            margin-left: 100px;
+        }
+
+        .btn-profile-img {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-profile-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn-profile-img:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-logout {
+            background: #ca4250;
+            color: white !important;
+            padding: 8px 10px;
+            border-radius: 5px;
+            transition: background 0.3s;
+            font-size: 10px;
+            text-decoration: none;
+        }
+
+        .btn-logout:hover {
+            background: #000;
+        }
         /* Konten utama */
         main {
             padding: 40px 80px;
@@ -206,6 +230,7 @@ z-index: 1000;
         /* Footer dekorasi */
         .footer-icon {
             position: fixed;
+            
             bottom: 15px;
             left: 15px;
             width: 80px;
@@ -237,20 +262,18 @@ z-index: 1000;
                     </div>
                 </div>
 
-                <?php if (isset($_SESSION['user'])): ?>
-                    <a href="#" class="btn-profile-img">
-                        <img src="assets/image/profile.png" alt="Profile">
-                    </a>
-                    <a href="login.php" class="btn-login">Login</a>
+            <?php if (isset($_SESSION['user'])): ?>
+            <a href="#" class="btn-profile-img">
+                <img src="assets/image/profile.png" alt="Profile"></a>
+                <a href="logout.php" class="btn-logout">Logout</a>
                 <?php else: ?>
-                <a href="login.php" class="btn-logout">Logout</a>
+                <a href="login.php" class="btn-login">Login</a>
                 <?php endif; ?>
+
             </div>
         </div>
     </div>
 </header>
-    
-
 <main>
     <h2>Jadwal Lapangan</h2>
     <div class="filter">Pilih lokasi</div>

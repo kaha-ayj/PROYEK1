@@ -156,8 +156,6 @@ $booking_terakhir = [
         </div>
     </div>
 </section>
-
-
     <!-- Riwayat Booking Section -->
     <section class="booking-history">
         <div class="container">
@@ -227,44 +225,54 @@ $booking_terakhir = [
 
     <!-- Top Lapangan -->
     <section class="top-lapangan">
-        <div class="container">
-            <h2 class="section-title">TOP 5 LAPANGAN BADMINTON TERBAIK DI INDRAMAYU</h2>
-            <div class="lapangan-grid">
-                <?php foreach($top_lapangan as $lapangan): ?>
-                <div class="lapangan-card">
-                    <div class="lapangan-image">
-                        <img src="<?= $lapangan['gambar']; ?>" alt="<?= $lapangan['nama']; ?>" onerror="this.src='https://via.placeholder.com/300x200?text=Lapangan'">
-                        <div class="rating-badge">
-                            Sangat Baik
-                            <div class="rating-score"><?= $lapangan['rating']; ?></div>
-                        </div>
-                    </div>
-                    <div class="lapangan-content">
-                        <h3><?= $lapangan['nama']; ?></h3>
-                        <p class="lapangan-location"><i class="fas fa-map-marker-alt"></i> <?= $lapangan['lokasi']; ?></p>
-                        <div class="lapangan-rating">
-                            <?php
-                            $full = floor($lapangan['rating']);
-                            $half = ($lapangan['rating'] - $full) >= 0.5;
-                            for($i=0; $i<$full; $i++) echo '<i class="fas fa-star"></i>';
-                            if($half) echo '<i class="fas fa-star-half-alt"></i>';
-                            for($i=0; $i<5-$full-($half?1:0); $i++) echo '<i class="far fa-star"></i>';
-                            ?>
-                        </div>
-                        <div class="lapangan-footer">
-                            <div class="price-info">
-                                <p class="price-label">Harga per-Jam</p>
-                                <p class="price"><?= $lapangan['harga']; ?></p>
-                            </div>
-                            <a href="booking.php?lapangan=<?= urlencode($lapangan['nama']); ?>" class="btn-cek">Cek Lapangannya</a>
-                        </div>
+    <div class="container">
+        <h2 class="section-title">TOP 5 LAPANGAN BADMINTON TERBAIK DI INDRAMAYU</h2>
+        <div class="lapangan-grid">
+            <?php 
+            // Array gambar untuk setiap lapangan
+            $gambar_lapangan = [
+                'lap1.jpg',
+                'lap2.jpg', 
+                'lap3.jpg',
+                'lap4.jpg',
+                'lap5.jpg'
+            ];
+            
+            foreach($top_lapangan as $index => $lapangan): 
+            ?>
+            <div class="lapangan-card">
+                <div class="lapangan-image">
+                    <img src="assets/image/<?= $gambar_lapangan[$index]; ?>" alt="<?= $lapangan['nama']; ?>">
+                    <div class="rating-badge">
+                        Sangat Baik
+                        <div class="rating-score"><?= $lapangan['rating']; ?></div>
                     </div>
                 </div>
-                <?php endforeach; ?>
+                <div class="lapangan-content">
+                    <h3><?= $lapangan['nama']; ?></h3>
+                    <p class="lapangan-location"><i class="fas fa-map-marker-alt"></i> <?= $lapangan['lokasi']; ?></p>
+                    <div class="lapangan-rating">
+                        <?php
+                        $full = floor($lapangan['rating']);
+                        $half = ($lapangan['rating'] - $full) >= 0.5;
+                        for($i=0; $i<$full; $i++) echo '<i class="fas fa-star"></i>';
+                        if($half) echo '<i class="fas fa-star-half-alt"></i>';
+                        for($i=0; $i<5-$full-($half?1:0); $i++) echo '<i class="far fa-star"></i>';
+                        ?>
+                    </div>
+                    <div class="lapangan-footer">
+                        <div class="price-info">
+                            <p class="price-label">Harga per-Jam</p>
+                            <p class="price"><?= $lapangan['harga']; ?></p>
+                        </div>
+                        <a href="booking.php?lapangan=<?= urlencode($lapangan['nama']); ?>" class="btn-cek">Cek Lapangannya</a>
+                    </div>
+                </div>
             </div>
+            <?php endforeach; ?>
         </div>
-    </section>
-
+    </div>
+</section>
     <!-- Footer -->
     <footer class="footer">
         <div class="container">

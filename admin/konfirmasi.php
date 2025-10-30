@@ -5,6 +5,7 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != 'admin') {
     header("Location: ../login.php");
     exit();
 }
+
 include '../config/koneksi.php';
 
 // Cek apakah ada tanggal yang dipilih dari kalender, jika tidak, gunakan tanggal hari ini
@@ -156,7 +157,8 @@ $total_pemasukan = $result_pemasukan->fetch_assoc()['total_pemasukan'] ?? 0; // 
         <div class="profile">
             <div class="profile-pic"></div>
             <div class="profile-info">
-                <strong><?php echo htmlspecialchars($_SESSION['nama']); ?></strong><br>
+            <strong><?php echo htmlspecialchars($_SESSION['user']['nama']); ?></strong>
+
                 <a href="../logout.php">Logout</a>
             </div>
         </div>

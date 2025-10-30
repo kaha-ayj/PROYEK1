@@ -99,42 +99,21 @@
     border-radius: 10px;
   }
 
-  /* container baris pembayaran dan tombol booking */
   .payment-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
   }
 
-  .payment-header h4 {
-    margin: 0;
-  }
-
-  .btn-booking {
-    background: #ccc;
-    color: #333;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: not-allowed;
-    transition: 0.3s;
-  }
-
-  .btn-booking.active {
-    background: #BFD5DD;
-    color: #000;
-    cursor: pointer;
-  }
-
+  /* Box metode pembayaran */
   .payment-methods {
-    background: white;
+    background: transparent; /* warna putih dihapus */
     border-radius: 15px;
     padding: 20px;
     width: 280px;
-    margin: 0 auto 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: none; /* hilangkan bayangan putih */
     text-align: center;
   }
 
@@ -161,7 +140,7 @@
   }
 
   .bank-option {
-    border: 2px solid #ddd;
+    border: 1.5px solid #ddd;
     border-radius: 10px;
     padding: 8px;
     margin: 8px 0;
@@ -175,14 +154,56 @@
   }
 
   .bank-option.active {
-    background: #e8ebff;
-    border-color: #5b6cff;
+    backdrop-filter: blur(15px);
+
+    background: rgba(117, 165, 254, 0.7);
+    border-color: #ffffff;
   }
 
   .bank-option img {
     width: 60px;
     height: 25px;
     object-fit: contain;
+  }
+
+  .booking-box {
+    background: transparent; 
+    border-radius: 15px;
+    padding: 20px;
+    width: 280px;
+    box-shadow: none; 
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .booking-box h4 {
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #333;
+  }
+
+  .btn-booking {
+    background: #ccc;
+    color: #333;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: not-allowed;
+    transition: 0.3s;
+  }
+
+  .btn-booking.active {
+    background: #10b981;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(16,185,129,0.3);
+  }
+
+  .btn-booking.active:hover {
+    background: #059669;
   }
 
   @keyframes fadeIn {
@@ -193,10 +214,9 @@
   @media (max-width: 600px) {
     .payment-header {
       flex-direction: column;
-      align-items: flex-start;
-      gap: 10px;
+      align-items: center;
     }
-    .payment-methods {
+    .payment-methods, .booking-box {
       width: 90%;
     }
   }
@@ -207,9 +227,9 @@
 <header>
   <div class="logo">Lapangin.<span>Aja</span></div>
   <nav>
-    <a href="#" class="active">Lapangan</a>
-    <a href="#">Home</a>
-    <a href="#">Message</a>
+    <a href="jadwal_lapangan1.php" class="active">Lapangan</a>
+    <a href="homepage.php">Home</a>
+    <a href="messege1.php">Message</a>
   </nav>
   <div class="search-box">
     <input type="text" placeholder="Cari lapangan">
@@ -223,7 +243,7 @@
       <th>Nama Lapangan</th>
       <th>Detail</th>
       <th>Status</th>
-    <th>Jadwal</th>
+      <th>Jadwal</th>
       <th>Harga</th>
       <th>Jumlah</th>
     </tr>
@@ -238,24 +258,27 @@
   </table>
 
   <div class="payment-header">
+    <!-- Metode Pembayaran -->
+    <div class="payment-methods">
+      <button class="btn-metode" id="toggleBtn">Pilih Metode Pembayaran</button>
 
-  <div class="payment-methods">
-    <button class="btn-metode" id="toggleBtn">Pilih Metode Pembayaran</button>
-    
+      <div class="bank-list" id="bankList">
+        <div class="bank-option"><img src="assets/image/dana.png" alt="DANA"></div>
+        <div class="bank-option"><img src="assets/image/gopay.png" alt="GoPay"></div>
+        <div class="bank-option"><img src="assets/image/bca.png" alt="BCA"></div>
+        <div class="bank-option"><img src="assets/image/bri.png" alt="BRI"></div>
+        <div class="bank-option"><img src="assets/image/bni.png" alt="BNI"></div>
+        <div class="bank-option"><img src="assets/image/btn.png" alt="BTN"></div>
+      </div>
+    </div>
 
-    <div class="bank-list" id="bankList">
-      <div class="bank-option"><img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Dana_logo.png" alt="DANA"></div>
-      <div class="bank-option"><img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/GoPay_logo.png" alt="GoPay"></div>
-      <div class="bank-option"><img src="https://upload.wikimedia.org/wikipedia/commons/0/0c/BCA_logo.png" alt="BCA"></div>
-      <div class="bank-option"><img src="https://upload.wikimedia.org/wikipedia/commons/f/f0/BRI_logo.png" alt="BRI"></div>
-      <div class="bank-option"><img src="https://upload.wikimedia.org/wikipedia/commons/f/fb/BNI_logo.png" alt="BNI"></div>
-      <div class="bank-option"><img src="https://upload.wikimedia.org/wikipedia/commons/f/f3/BTN_logo.png" alt="BTN"></div>
+    <!-- Tombol Booking -->
+    <div class="booking-box">
+      <button class="btn-booking" id="btnBooking">Booking Sekarang</button>
     </div>
   </div>
 </div>
-<div>
 
-  </div>
 <script>
   const toggleBtn = document.getElementById('toggleBtn');
   const bankList = document.getElementById('bankList');
@@ -270,8 +293,14 @@
     option.addEventListener('click', () => {
       bankOptions.forEach(o => o.classList.remove('active'));
       option.classList.add('active');
-      btnBooking.classList.add('active'); // aktifkan tombol Booking
+      btnBooking.classList.add('active');
     });
+  });
+
+  btnBooking.addEventListener('click', () => {
+    if (btnBooking.classList.contains('active')) {
+      alert('Pembayaran sedang diproses...');
+    }
   });
 </script>
 
