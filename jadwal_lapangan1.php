@@ -1,5 +1,7 @@
 <?php
 // Contoh data dummy (bisa nanti diambil dari database)
+session_start();
+include 'config/koneksi.php';
 $lapangan = [
     [
         "nama" => "Kelapa Gading",
@@ -29,122 +31,12 @@ $lapangan = [
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/home.css">
+    <link rel="stylesheet" href="assets/nav.css">
     <title>Lapangin.Aja | Jadwal Lapangan</title>
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            background: linear-gradient(to bottom right, #d9e7e9, #a6bcc0);
-        }
+    
 
-.header {
-    padding: 5px 0;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-        }
-
-        .nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-        }
-
-        .logo-atas {
-            height: 55px;
-            width: auto;
-        }
-
-        .logo-atas img {
-            height: 100%;
-            width: auto;
-            object-fit: contain;
-
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
-
-        .nav-links a {
-            color: #5d7b87;
-            text-decoration: none;
-            font-weight: 700;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-            color: #6d6666;
-        }
-
-        .right-section {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .search {
-            display: flex;
-            align-items: center;
-            background: #f0f0f0;
-            padding: 5px 10px;
-            border-radius: 20px;
-        }
-
-        .search input {
-            border: none;
-            outline: none;
-            background: transparent;
-            font-size: 14px;
-            width: 120px;
-        }
-
-        .search-icon {
-            margin-left: 100px;
-        }
-
-        .btn-profile-img {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            overflow: hidden;
-            transition: transform 0.2s ease;
-        }
-
-        .btn-profile-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .btn-profile-img:hover {
-            transform: scale(1.05);
-        }
-
-        .btn-logout {
-            background: #ca4250;
-            color: white !important;
-            padding: 8px 10px;
-            border-radius: 5px;
-            transition: background 0.3s;
-            font-size: 10px;
-            text-decoration: none;
-        }
-
-        .btn-logout:hover {
-            background: #000;
-        }
         /* Konten utama */
         main {
             padding: 40px 80px;
@@ -240,44 +132,12 @@ $lapangan = [
     </style>
 </head>
 <body>
-<header class="header">
-    <div class="container">
-        <div class="nav">
 
-            <div class="logo">
-                <div class="logo-atas">
-                    <img src="assets/image/logo.png" alt="logo lapangin.aja">
-                </div>
-            </div>
+<?php include 'includes/nav.php'; ?>
 
-            <div class="nav-links">
-                <a href="jadwal_lapangan1.php">Lapangan</a>
-                <a href="homepage.php" class="active">Home</a>
-                <a href="messege1.php">Messege</a>
-
-                <div class="right-section">
-                    <div class="search">
-                        <input type="text" placeholder="Cari lapangan...">
-                        <span class="search-icon">🔍</span>
-                    </div>
-                </div>
-
-            <?php if (isset($_SESSION['user'])): ?>
-            <a href="#" class="btn-profile-img">
-                <img src="assets/image/profile.png" alt="Profile"></a>
-                <a href="logout.php" class="btn-logout">Logout</a>
-                <?php else: ?>
-                <a href="login.php" class="btn-login">Login</a>
-                <?php endif; ?>
-
-            </div>
-        </div>
-    </div>
-</header>
 <main>
     <h2>Jadwal Lapangan</h2>
     <div class="filter">Pilih lokasi</div>
-
 
     <div class="lapangan-container">
         <?php foreach ($lapangan as $l): ?>

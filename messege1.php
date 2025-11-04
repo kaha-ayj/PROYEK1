@@ -1,179 +1,287 @@
+<?php
+session_start();
+include 'config/koneksi.php'; 
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lapangin.Aja | Chat Admin</title>
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            background: linear-gradient(to bottom right, #eaf2f2, #cfd8dc);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="assets/home.css">
+<link rel="stylesheet" href="assets/nav.css">
+<title>Lapangin.Aja | Chat Admin</title>
 
-        /* Navbar */
-        .navbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #eaf2f2;
-            padding: 10px 50px;
-            box-shadow: 0 1px 5px rgba(0,0,0,0.1);
-        }
+<style>
+/* ====== Layout ====== */
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
 
-        .logo img {
-            height: 40px;
-        }
+/* ====== PANEL KIRI ====== */
+.left-panel {
+    width: 100%;
+    border-radius: 10px;
+    background-color: #E7F2EF;
+    padding: 30px;
+    margin-top: 50px;
+    transition: 0.4s;
+}
 
-        .logo h2 {
-            color: #1e2f97;
-            font-style: italic;
-            margin: 0;
-        }
+.left-panel h2 {
+    font-weight: 700;
+    color: #000000ff;
+    margin-bottom: 15px;
 
-        .menu {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
+}
 
-        .menu a {
-            text-decoration: none;
-            color: #6b7a8f;
-            font-weight: 600;
-            font-style: italic;
-        }
+.left-panel h4 {
+    color: #333;
+    margin-bottom: 10px;
+}
 
-        .menu a.active {
-            color: #1e2f97;
-            text-decoration: underline;
-        }
+.admin-box {
+    background: transparent;
+    margin-top: 10px;
+    padding: 10px 2px;
+    border-radius: 8px;
+    width: 40%;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
 
-        .search {
-            background: white;
-            padding: 5px 10px;
-            border-radius: 15px;
-            border: 1px solid #ccc;
-            display: flex;
-            align-items: center;
-        }
+.admin-box:hover {
+    transform: scale(1.02);
+}
 
-        .search input {
-            border: none;
-            outline: none;
-        }
+.admin-box img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
 
-        .icon {
-            background: #fff;
-            border-radius: 50%;
-            padding: 8px;
-            box-shadow: 0 2px 3px rgba(0,0,0,0.1);
-        }
+.admin-box .info .name {
+    font-weight: bold;
+}
 
-        /* Container utama */
-        .content {
-            background: #e8f4f3;
-            width: 80%;
-            margin: 50px auto;
-            padding: 50px;
-            border-radius: 15px;
-            min-height: 400px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
+.admin-box .info .message {
+    color: #555;
+    font-style: italic;
+    font-size: 13px;
+}
 
-        .content h2 {
-            font-weight: 700;
-            text-align: left;
-            color: #000;
-            text-shadow: 0 2px 3px rgba(0,0,0,0.1);
-        }
+/* ====== AREA CHAT ====== */
+.chat-area {
+    width: 65%;
+    background: #dbe5e4;
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    transition: 0.4s;
+}
 
-        /* Chat Box */
-        .chat-box {
-            background: #f5fafa;
-            margin-top: 30px;
-            padding: 15px 20px;
-            border-radius: 8px;
-            width: 40%;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 2px 3px rgba(0,0,0,0.1);
-        }
+.chat-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 25px;
+    background: #cdd7d6;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
 
-        .chat-box img {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
+.chat-header img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+}
 
-        .chat-box .info {
-            font-size: 14px;
-        }
+.chat-header .name {
+    font-weight: bold;
+    font-size: 16px;
+}
 
-        .chat-box .info .name {
-            font-weight: bold;
-        }
+.messages {
+    padding: 25px;
+    overflow-y: auto;
+    height: 400px;
+    
+}
 
-        .chat-box .info .message {
-            color: #555;
-            font-style: italic;
-        }
+.msg {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 15px;
+}
 
-        footer img {
-            position: fixed;
-            bottom: 15px;
-            left: 15px;
-            width: 70px;
-            opacity: 0.7;
-        }
-    </style>
+.msg.admin { justify-content: flex-start; }
+.msg.user { justify-content: flex-end; }
+
+.msg img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin: 0 10px;
+}
+
+.msg .bubble {
+    background: #fff;
+    padding: 10px 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+    max-width: 60%;
+    font-size: 14px;
+}
+
+/* ====== INPUT CHAT ====== */
+.input-area {
+    background: #cdd7d6;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #ccc;
+    gap: 10px;
+}
+
+.input-area input {
+    flex: 1;
+    border: 1px solid #bbb;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    outline: none;
+}
+
+.input-area input:focus {
+    border-color: #2b8574;
+}
+
+.input-area button {
+    background: #2b8574;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.input-area button:hover {
+    background: #22685c;
+    transform: scale(1.03);
+}
+
+footer img {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+    width: 70px;
+    opacity: 0.7;
+}
+
+/* Saat chat dibuka (HP mode) */
+.container.chat-open .left-panel {
+    display: none;
+}
+.container.chat-open .chat-area {
+    display: flex;
+    width: 100%;
+}
+</style>
 </head>
+
 <body>
 
-    <!-- Navbar -->
-    <div class="navbar">
-        <div class="logo">
-            <img src="assets/image/logo.png" alt="Logo">
-            <h2></h2>
-        </div>
-        <ul>
-    <div class="menu">
-            <a href="jadwal_lapangan1.php">Lapangan</a>
-            <a href="homepage.php">Home</a>
-            <a href="messege1.php" class="active">Message</a>
-            <div class="search">
-                <input type="text" placeholder="Cari lapangan">
-                🔍
-            </div>
-            <div class="icon">👤</div>
-        </div>
-    </div>
-        </ul>
+    <?php include 'includes/nav.php'; ?>
 
-    <!-- Konten -->
-    <div class="content">
+
+<div class="container" id="chatContainer">
+    <!-- PANEL KIRI -->
+    <div class="left-panel" id="adminList">
         <h2>Chat dengan Admin</h2>
-
-        <div class="chat-box">
+        <h4>ADMIN</h4>
+        <div class="admin-box" id="openChat">
             <img src="assets/image/image 49.png" alt="Admin">
             <div class="info">
                 <div class="name">Reinayla</div>
-                <div class="message"><a href="messege2.php">Ada kesulitan? chat dengan admin <span>></span></a></div>
+                <div class="message">Ada kesulitan? chat dengan admin</div>
             </div>
         </div>
     </div>
 
-    <!-- Logo bawah -->
-    <footer>
-        <img src="assets/image/image 4.png" alt="Shuttlecock">
-    </footer>
+    <!-- AREA CHAT -->
+    <div class="chat-area" id="chatArea">
+        <div class="chat-header">
+            <img src="assets/image/image 49.png" alt="Admin">
+            <div class="name">Reinayla</div>
+        </div>
 
+        <div class="messages" id="chatBox">
+            <div class="msg user">
+                <div class="bubble">Hai, admin!</div>
+                <img src="assets/image/image 50.png" alt="User">
+            </div>
+
+            <div class="msg admin">
+                <img src="assets/image/image 49.png" alt="Admin">
+                <div class="bubble">
+                    Halo, selamat datang di Lapangan SmashPoint! 😊<br>
+                    Ada yang bisa saya bantu?<br><br>
+                    1. Cek jadwal lapangan<br>
+                    2. Pesan lapangan<br>
+                    3. Lihat tarif & fasilitas<br>
+                    4. Hubungi admin
+                </div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="messageInput" placeholder="Tulis pesan...">
+            <button id="sendBtn">Kirim</button>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <img src="assets/image/image 4.png" alt="Shuttlecock">
+</footer>
+
+<script>
+// Klik admin => buka chat
+document.getElementById("openChat").addEventListener("click", () => {
+    document.getElementById("chatContainer").classList.add("chat-open");
+});
+
+// Kirim pesan user
+document.getElementById("sendBtn").addEventListener("click", sendMessage);
+document.getElementById("messageInput").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+    }
+});
+
+function sendMessage() {
+    const input = document.getElementById("messageInput");
+    const text = input.value.trim();
+    if (text === "") return;
+
+    const chatBox = document.getElementById("chatBox");
+
+    // Tambahkan pesan user
+    const userMsg = document.createElement("div");
+    userMsg.className = "msg user";
+    userMsg.innerHTML = `<div class="bubble">${text}</div><img src="assets/image/image 50.png" alt="User">`;
+    chatBox.appendChild(userMsg);
+
+    // Scroll ke bawah
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    // Kosongkan input
+    input.value = "";
+}
+</script>
 </body>
 </html>

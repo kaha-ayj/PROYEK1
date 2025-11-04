@@ -138,27 +138,9 @@
     </style>
 </head>
 <body>
-
-    <!-- ===== NAVBAR ===== -->
-    <nav>
-        <div class="logo">
-            <img src="assets/image/logo.png" alt="Logo"> <!-- Kosongkan dulu logo -->
-            <span></span>
-        </div>
-
-        <ul>
-            <li><i>Lapangan</i></li>
-            <li><i>Home</i></li>
-            <li><i>Message</i></li>
-        </ul>
-
-        <div class="search">
-            <input type="text" placeholder="Cari lapangan">
-            🔍
-        </div>
-    </nav>
-
-    <!-- ===== DETAIL PESANAN ===== -->
+<header>
+    <?php include 'includes/nav.php'; ?>
+</header>
     <div class="container">
         <div class="card">
             <h2>Detail Pesanan</h2>

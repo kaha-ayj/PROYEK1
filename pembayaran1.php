@@ -1,64 +1,18 @@
+<?php 
+session_start();
+include 'config/koneksi.php';
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/home.css">
+    <link rel="stylesheet" href="assets/nav.css">
 <title>Pembayaran Lapangan - Lapangin.Aja</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Poppins', sans-serif;
-  }
 
-  body {
-    background: linear-gradient(180deg, #e4edf1 0%, #b8cfd3 100%);
-    min-height: 100vh;
-  }
-
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 50px;
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    font-size: 22px;
-    font-weight: 700;
-    color: #1a2a5c;
-  }
-
-  .logo span {
-    color: #476cff;
-  }
-
-  nav a {
-    margin: 0 15px;
-    text-decoration: none;
-    color: #75828e;
-    font-weight: 500;
-  }
-
-  nav a.active {
-    color: #5b6cff;
-    font-weight: 600;
-    border-bottom: 2px solid #5b6cff;
-    padding-bottom: 3px;
-  }
-
-  .search-box {
-    background: white;
-    border-radius: 20px;
-    padding: 5px 10px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
 
   .search-box input {
     border: none;
@@ -224,18 +178,8 @@
 </head>
 <body>
 
-<header>
-  <div class="logo">Lapangin.<span>Aja</span></div>
-  <nav>
-    <a href="jadwal_lapangan1.php" class="active">Lapangan</a>
-    <a href="homepage.php">Home</a>
-    <a href="messege1.php">Message</a>
-  </nav>
-  <div class="search-box">
-    <input type="text" placeholder="Cari lapangan">
-    🔍
-  </div>
-</header>
+  <?php include 'includes/nav.php'; ?>
+
 
 <div class="payment-card">
   <table>
