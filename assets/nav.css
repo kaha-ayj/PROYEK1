@@ -5,18 +5,12 @@
     position: sticky;
     top: 0;
     z-index: 1000;
-    .header {
-background-color: transparent;
-box-shadow: none;
-}
-
-        }
+ }
 
         .nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            
             
 
         }
@@ -24,15 +18,19 @@ box-shadow: none;
         .logo {
             display: flex;
             align-items: center;
-            margin-right: 300px;
+            margin-right: 250px;
+        
         }
 
         .logo-atas {
             height: 55px;
             width: auto;
+            
         }
 
         .logo-atas img {
+            display: flex;
+        
             height: 100%;
             width: auto;
             object-fit: contain;

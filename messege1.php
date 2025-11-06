@@ -193,9 +193,9 @@ footer img {
 </head>
 
 <body>
-
-    <?php include 'includes/nav.php'; ?>
-
+<header class="header">
+<?php include 'includes/nav.php'; ?>
+</header>
 
 <div class="container" id="chatContainer">
     <!-- PANEL KIRI -->
@@ -283,5 +283,6 @@ function sendMessage() {
     input.value = "";
 }
 </script>
+<?php include 'includes/footer.php'; ?>
 </body>
 </html>

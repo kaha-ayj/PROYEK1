@@ -132,9 +132,9 @@ $lapangan = [
     </style>
 </head>
 <body>
-
+<header class="header">
 <?php include 'includes/nav.php'; ?>
-
+</header>
 <main>
     <h2>Jadwal Lapangan</h2>
     <div class="filter">Pilih lokasi</div>
@@ -156,6 +156,6 @@ $lapangan = [
 </main>
 
 <img src="assets/image/image 4.png" class="footer-icon" alt="Dekorasi">
-
+<?php include 'includes/footer.php'; ?>
 </body>
 </html>

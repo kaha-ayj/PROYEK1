@@ -177,8 +177,9 @@ include 'config/koneksi.php';
 </style>
 </head>
 <body>
-
-  <?php include 'includes/nav.php'; ?>
+<header class="header">
+<?php include 'includes/nav.php'; ?>
+</header>
 
 
 <div class="payment-card">
@@ -247,6 +248,6 @@ include 'config/koneksi.php';
     }
   });
 </script>
-
+<?php include 'includes/footer.php'; ?>
 </body>
 </html>

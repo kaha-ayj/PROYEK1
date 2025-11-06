@@ -201,40 +201,8 @@
     </style>
 </head>
 <body>
-
 <header class="header">
-    <div class="container">
-        <div class="nav">
-
-            <div class="logo">
-                <div class="logo-atas">
-                    <img src="assets/image/logo.png" alt="logo lapangin.aja">
-                </div>
-            </div>
-
-            <div class="nav-links">
-                <a href="jadwal_lapangan1.php">Lapangan</a>
-                <a href="homepage.php" class="active">Home</a>
-                <a href="messege1.php">Messege</a>
-
-                <div class="right-section">
-                    <div class="search">
-                        <input type="text" placeholder="Cari lapangan...">
-                        <span class="search-icon">🔍</span>
-                    </div>
-                </div>
-
-            <?php if (isset($_SESSION['user'])): ?>
-            <a href="#" class="btn-profile-img">
-                <img src="assets/image/profile.png" alt="Profile"></a>
-                <a href="logout.php" class="btn-logout">Logout</a>
-                <?php else: ?>
-                <a href="login.php" class="btn-login">Login</a>
-                <?php endif; ?>
-
-            </div>
-        </div>
-    </div>
+<?php include 'includes/nav.php'; ?>
 </header>
     <!-- ===== HALAMAN BERHASIL ===== -->
     <div class="container">
@@ -252,6 +220,6 @@
     <footer>
         <img src="assets/image/image 4.png" alt="Logo Shuttlecock"> <!-- Kosongkan dulu -->
     </footer>
-
+<?php include 'includes/footer.php'; ?>
 </body>
 </html>

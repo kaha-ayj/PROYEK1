@@ -1,6 +1,5 @@
 <link rel="stylesheet" href="assets/nav.css">
 
-<header class="header">
     <div class="container">
         <div class="nav">
             <div class="logo">

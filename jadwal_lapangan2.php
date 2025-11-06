@@ -151,9 +151,9 @@ $lapanganDipilih = $_GET['lapangan'] ?? 'Lapangan 1';
     </style>
 </head>
 <body>
-    <header>
-        <?php include 'includes/nav.php'; ?>
-    </header>
+<header class="header">
+<?php include 'includes/nav.php'; ?>
+</header>
     <main>
     <div class="container">
         <div class="content">
@@ -218,7 +218,7 @@ $lapanganDipilih = $_GET['lapangan'] ?? 'Lapangan 1';
         </div>
     </div>
     </main>
-    
+    <?php include 'includes/footer.php'; ?>
 </body>
 
 </html>
