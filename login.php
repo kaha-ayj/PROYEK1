@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ];
 
             if ($user['role'] === 'admin') {
-                echo "<script>alert('Login berhasil sebagai admin!'); window.location='admin/admin_dashboard.php';</script>";
+                echo "<script>alert('Login berhasil sebagai admin!'); window.location='admin/dashboard.php';</script>";
             } else {
                 echo "<script>alert('Login berhasil!'); window.location='homepage.php';</script>";
             }

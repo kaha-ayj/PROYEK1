@@ -1,15 +1,90 @@
 <?php 
 session_start();
 include 'config/koneksi.php';
+
+/* ============================
+   Ambil jadwal_id GET/POST
+   ============================ */
+$jadwal_id = $_POST['jadwal_id'] ?? $_GET['jadwal_id'] ?? null;
+
+if (!$jadwal_id) {
+    die("Jadwal tidak ditemukan. <a href='home.php'>Kembali</a>");
+}
+
+/* ===========================================
+   AMBIL DATA JADWAL + LAPANGAN (HARUS DULUAN)
+   =========================================== */
+$qDetail = "
+    SELECT j.*, l.namaLapangan, l.hargaPerJam 
+    FROM jadwal j
+    JOIN lapangan l ON j.lapanganID = l.lapanganID
+    WHERE j.jadwalID = ?
+";
+$stmt = $conn->prepare($qDetail);
+$stmt->bind_param("i", $jadwal_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$data = $result->fetch_assoc();
+
+if (!$data) {
+    die("DATA JADWAL TIDAK DITEMUKAN UNTUK ID: $jadwal_id");
+}
+
+// Format tampilan
+$mulai   = date('H:i', strtotime($data['waktuMulai']));
+$selesai = date('H:i', strtotime($data['waktuSelesai']));
+$harga   = number_format($data['hargaPerJam'], 0, ',', '.');
+
+/* ============================
+   PROSES BOOKING
+   ============================ */
+if (isset($_POST['prosesBayar'])) {
+
+    if (!isset($_SESSION['penggunaID'])) {
+        die("Anda harus login untuk melanjutkan.");
+    }
+
+    $penggunaID = $_SESSION['penggunaID'];
+    $metode = $_POST['metode'] ?? null;
+
+    if (!$metode) {
+        die("Metode pembayaran belum dipilih.");
+    }
+
+    $totalBiaya = $data['hargaPerJam'];
+
+    // Insert pemesanan
+    $q2 = "INSERT INTO pemesanan (penggunaID, jadwalID, totalBiaya, statusPemesanan)
+           VALUES (?, ?, ?, 'dibayar')";
+    $stmt2 = $conn->prepare($q2);
+    $stmt2->bind_param("iii", $penggunaID, $jadwal_id, $totalBiaya);
+    $stmt2->execute();
+    $pemesananID = $stmt2->insert_id;
+
+    // Insert pembayaran
+    $q3 = "INSERT INTO pembayaran (pemesananID, penggunaID, metodePembayaran, grossAmount, transactionStatus)
+           VALUES (?, ?, ?, ?, 'berhasil')";
+    $stmt3 = $conn->prepare($q3);
+    $stmt3->bind_param("iisi", $pemesananID, $penggunaID, $metode, $totalBiaya);
+    $stmt3->execute();
+
+    // Update jadwal
+    $conn->query("UPDATE jadwal SET status = 'Dipesan' WHERE jadwalID = $jadwal_id");
+
+    header("Location: pembayaran_sukses.php");
+    exit;
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="assets/home.css">
-    <link rel="stylesheet" href="assets/nav.css">
+<link rel="stylesheet" href="assets/home.css">
+<link rel="stylesheet" href="assets/nav.css">
 <title>Pembayaran Lapangan - Lapangin.Aja</title>
+
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
@@ -175,12 +250,13 @@ include 'config/koneksi.php';
     }
   }
 </style>
+
 </head>
 <body>
+
 <header class="header">
 <?php include 'includes/nav.php'; ?>
 </header>
-
 
 <div class="payment-card">
   <table>
@@ -192,17 +268,19 @@ include 'config/koneksi.php';
       <th>Harga</th>
       <th>Jumlah</th>
     </tr>
+
     <tr>
-      <td><img src="assets/image/lap_KG.png" alt="Lapangan"></td>
-      <td>Lapangan A<br>ID#12345</td>
-      <td>Belum bayar</td>
-      <td>07.00 - 08.00</td>
-      <td>Rp 15.000</td>
-      <td>-</td>
+      <td><img src="assets/image/lap_KG.png" alt="<?= htmlspecialchars($data['namaLapangan']) ?>"></td>
+      <td><?= htmlspecialchars($data['namaLapangan']) ?><br>ID#<?= $data['jadwalID'] ?></td>
+      <td><?= htmlspecialchars($data['status']) ?></td>
+      <td><?= $mulai ?> - <?= $selesai ?></td>
+      <td>Rp <?= $harga ?></td>
+      <td>1x</td>
     </tr>
   </table>
 
   <div class="payment-header">
+    
     <!-- Metode Pembayaran -->
     <div class="payment-methods">
       <button class="btn-metode" id="toggleBtn">Pilih Metode Pembayaran</button>
@@ -219,35 +297,48 @@ include 'config/koneksi.php';
 
     <!-- Tombol Booking -->
     <div class="booking-box">
-      <button class="btn-booking" id="btnBooking">Booking Sekarang</button>
+      <form method="POST">
+        <input type="hidden" name="metode" id="metodePembayaran">
+        <input type="hidden" name="jadwal_id" value="<?= $jadwal_id ?>">
+        <button type="submit" name="prosesBayar" class="btn-booking" id="btnBooking">Booking Sekarang</button>
+      </form>
     </div>
+
   </div>
 </div>
 
 <script>
-  const toggleBtn = document.getElementById('toggleBtn');
-  const bankList = document.getElementById('bankList');
-  const bankOptions = document.querySelectorAll('.bank-option');
-  const btnBooking = document.getElementById('btnBooking');
+const toggleBtn = document.getElementById('toggleBtn');
+const bankList = document.getElementById('bankList');
+const bankOptions = document.querySelectorAll('.bank-option');
+const btnBooking = document.getElementById('btnBooking');
+const metodeHidden = document.getElementById('metodePembayaran');
 
-  toggleBtn.addEventListener('click', () => {
+toggleBtn.addEventListener('click', () => {
     bankList.style.display = bankList.style.display === 'block' ? 'none' : 'block';
-  });
+});
 
-  bankOptions.forEach(option => {
+bankOptions.forEach(option => {
     option.addEventListener('click', () => {
-      bankOptions.forEach(o => o.classList.remove('active'));
-      option.classList.add('active');
-      btnBooking.classList.add('active');
-    });
-  });
+        bankOptions.forEach(o => o.classList.remove('active'));
+        option.classList.add('active');
 
-  btnBooking.addEventListener('click', () => {
-    if (btnBooking.classList.contains('active')) {
-      alert('Pembayaran sedang diproses...');
+        metodeHidden.value = option.querySelector("img").alt;
+
+        btnBooking.classList.add('active');
+        btnBooking.disabled = false;
+    });
+});
+
+btnBooking.addEventListener("click", (e) => {
+    if (metodeHidden.value === "") {
+        e.preventDefault();
+        alert("Pilih metode pembayaran terlebih dahulu");
     }
-  });
+});
 </script>
+
 <?php include 'includes/footer.php'; ?>
+
 </body>
 </html>
