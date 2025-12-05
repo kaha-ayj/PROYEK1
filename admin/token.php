@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-include 'config/midtrans.php';
+include 'config/koneksi.php'; 
 require_once 'vendor/autoload.php';
 
 \Midtrans\Config::$serverKey = 'SB-MID-SERVER-XXXX';
