@@ -207,7 +207,7 @@ if (isset($_POST['prosesBayar'])) {
 <title>Pembayaran Lapangan - Lapangin.Aja</title>
 
 <!-- Midtrans Snap - GANTI dengan Client Key asli Anda -->
-<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="MIDTRANS_CLIENT_KEY"></script>
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="Mid-client-70ua3ZN798SZKqf5"></script>
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');

@@ -4,7 +4,7 @@ session_start();
 include 'config/koneksi.php'; 
 require_once 'vendor/autoload.php';
 
-\Midtrans\Config::$serverKey = 'SB-MID-SERVER-XXXX';
+\Midtrans\Config::$serverKey = "Mid-server-dmei7dxtLXKwMtj3hmnuFKcn";
 \Midtrans\Config::$isProduction = false;
 \Midtrans\Config::$isSanitized = true;
 \Midtrans\Config::$is3ds = true;
