@@ -4,7 +4,7 @@ session_start();
 include 'config/midtrans.php';
 require_once 'vendor/autoload.php';
 
-\Midtrans\Config::$serverKey = "*********";
+\Midtrans\Config::$serverKey = "MIDTRANS_SERVER_KEY";
 \Midtrans\Config::$isProduction = false;
 \Midtrans\Config::$isSanitized = true;
 \Midtrans\Config::$is3ds = true;
