@@ -1,0 +1,14 @@
+# Aktifkan Rewrite Engine
+RewriteEngine On
+RewriteBase /proyek1/
+
+# Set default charset
+AddDefaultCharset UTF-8
+
+# Cegah directory listing
+Options -Indexes
+
+# Izinkan akses ke file PHP
+<FilesMatch "\.php$">
+    Require all granted
+</FilesMatch>

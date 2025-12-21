@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id_post = $_POST['pemesananID'];
     $new_status = $_POST['statusPemesanan'];
 
-    $stmt_get = mysqli_prepare($conn, "SELECT jadwalID FROM pemesanan WHERE pemesananID = ?");
+    $stmt_get = mysqli_prepare($koneksi, "SELECT jadwalID FROM pemesanan WHERE pemesananID = ?");
     mysqli_stmt_bind_param($stmt_get, "i", $id_post);
     mysqli_stmt_execute($stmt_get);
     $result_get = mysqli_stmt_get_result($stmt_get);
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($jadwalID) {
         $query_update = "UPDATE pemesanan SET statusPemesanan = ? WHERE pemesananID = ?";
-        $stmt_update = mysqli_prepare($conn, $query_update);
+        $stmt_update = mysqli_prepare($koneksi, $query_update);
         mysqli_stmt_bind_param($stmt_update, "si", $new_status, $id_post);
         mysqli_stmt_execute($stmt_update);
         mysqli_stmt_close($stmt_update);
@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $status_jadwal = 'Tersedia';
         }
 
-        $stmt_jadwal = mysqli_prepare($conn, "UPDATE jadwal SET status = ? WHERE jadwalID = ?");
+        $stmt_jadwal = mysqli_prepare($koneksi, "UPDATE jadwal SET status = ? WHERE jadwalID = ?");
         mysqli_stmt_bind_param($stmt_jadwal, "si", $status_jadwal, $jadwalID);
         mysqli_stmt_execute($stmt_jadwal);
         mysqli_stmt_close($stmt_jadwal);
@@ -50,7 +50,7 @@ $query_select = "SELECT p.*, l.namaLapangan, j.waktuMulai, j.waktuSelesai
                  JOIN jadwal j ON p.jadwalID = j.jadwalID
                  JOIN lapangan l ON j.lapanganID = l.lapanganID
                  WHERE p.pemesananID = ?";
-$stmt_select = mysqli_prepare($conn, $query_select);
+$stmt_select = mysqli_prepare($koneksi, $query_select);
 mysqli_stmt_bind_param($stmt_select, "i", $pemesananID);
 mysqli_stmt_execute($stmt_select);
 $result = mysqli_stmt_get_result($stmt_select);

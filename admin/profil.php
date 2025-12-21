@@ -17,7 +17,7 @@ if ($userID == 0) {
 }
 
 // Ambil data terbaru dari database
-$stmt = mysqli_prepare($conn, "SELECT * FROM pengguna WHERE penggunaID = ?");
+$stmt = mysqli_prepare($koneksi, "SELECT * FROM pengguna WHERE penggunaID = ?");
 mysqli_stmt_bind_param($stmt, "i", $userID);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
@@ -70,11 +70,11 @@ if (isset($_POST['update_profile'])) {
         if (!empty($password_baru)) {
             $password_hash = md5($password_baru); 
             $query_update = "UPDATE pengguna SET nama=?, email=?, password=?, foto=?, role=? WHERE penggunaID=?";
-            $stmt_update = mysqli_prepare($conn, $query_update);
+            $stmt_update = mysqli_prepare($koneksi, $query_update);
             mysqli_stmt_bind_param($stmt_update, "sssssi", $nama, $email, $password_hash, $foto_nama, $role, $userID);
         } else {
             $query_update = "UPDATE pengguna SET nama=?, email=?, foto=?, role=? WHERE penggunaID=?";
-            $stmt_update = mysqli_prepare($conn, $query_update);
+            $stmt_update = mysqli_prepare($koneksi, $query_update);
             mysqli_stmt_bind_param($stmt_update, "ssssi", $nama, $email, $foto_nama, $role, $userID);
         }
 
@@ -86,13 +86,13 @@ if (isset($_POST['update_profile'])) {
             $_SESSION['user']['role'] = $role;
             
             // Refresh data dan KEMBALI KE MODE VIEW
-            $stmt = mysqli_prepare($conn, "SELECT * FROM pengguna WHERE penggunaID = ?");
+            $stmt = mysqli_prepare($koneksi, "SELECT * FROM pengguna WHERE penggunaID = ?");
             mysqli_stmt_bind_param($stmt, "i", $userID);
             mysqli_stmt_execute($stmt);
             $adminData = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
             $mode = 'view'; // Reset ke mode view setelah simpan
         } else {
-            $error_msg = "Gagal memperbarui profil: " . mysqli_error($conn);
+            $error_msg = "Gagal memperbarui profil: " . mysqli_error($koneksi);
         }
     }
 }
@@ -343,5 +343,5 @@ if (isset($_POST['update_profile'])) {
 </body>
 </html>
 <?php
-mysqli_close($conn);
+mysqli_close($koneksi);
 ?>

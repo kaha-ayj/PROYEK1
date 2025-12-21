@@ -1,4 +1,19 @@
 <?php
+// TAMBAHKAN INI DI AWAL dashboard.php
+session_start();
+
+// CEK LOGIN
+if (!isset($_SESSION['user'])) {
+    header('Location: ../login.php');
+    exit;
+}
+
+// CEK ROLE ADMIN
+if ($_SESSION['user']['role'] !== 'admin') {
+    header('Location: ../homepage.php');
+    exit;
+}
+
 require_once '../config/koneksi.php';
 
 $selectedDate = $_GET['tanggal'] ?? date('Y-m-d');
@@ -10,8 +25,6 @@ $currentMonth = date('m', $timestamp);
 
 $prevMonthDate = date('Y-m-d', strtotime('-1 month', $timestamp));
 $nextMonthDate = date('Y-m-d', strtotime('+1 month', $timestamp));
-
-
 $jumlahPenyewaan = 0;
 $totalPemasukan = 0;
 

@@ -4,64 +4,93 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Include koneksi database
-include 'config/koneksi.php';
-
 // Ambil order_id dari URL
-$order_id = $_GET['order_id'] ?? null;
+$order_id = $_GET['order_id'] ?? 'UNKNOWN';
 
-if (!$order_id) {
-    echo "<script>alert('Order ID tidak ditemukan.'); window.location.href='home.php';</script>";
-    exit;
+// Include koneksi database
+require_once 'config/koneksi.php';
+
+$detail_pesanan = null;
+if ($order_id !== 'UNKNOWN') {
+    // Gunakan prepared statement untuk keamanan
+    $query = "SELECT 
+                p.pembayaranID,
+                p.pemesananID,
+                p.penggunaID,
+                p.metodePembayaran,
+                p.grossAmount,
+                p.order_id,
+                p.transactionID,
+                p.paymentType,
+                p.status,
+                p.waktuDibuat,
+                p.waktuUpdate,
+                pe.tanggalPemesanan,
+                pe.totalBiaya,
+                pe.statusPemesanan,
+                j.jadwalID,
+                j.waktuMulai,
+                j.waktuSelesai,
+                j.status as statusJadwal,
+                l.lapanganID,
+                l.namaLapangan,
+                l.venueID,
+                v.namaVenue,
+                v.alamat as alamatVenue
+              FROM pembayaran p
+              JOIN pemesanan pe ON p.pemesananID = pe.pemesananID
+              JOIN jadwal j ON pe.jadwalID = j.jadwalID
+              JOIN lapangan l ON j.lapanganID = l.lapanganID
+              LEFT JOIN venue v ON l.venueID = v.venueID
+              WHERE p.order_id = ?";
+    
+    if ($stmt = $conn->prepare($query)) {
+        $stmt->bind_param("s", $order_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $detail_pesanan = $result->fetch_assoc();
+        $stmt->close();
+    }
 }
 
-// Ambil detail pesanan dari database
-$query = "SELECT pe.*, j.*, l.namaLapangan, l.hargaPerJam, pb.metodePembayaran, pb.status as statusPembayaran, pb.order_id,
-                 p.namaPengguna, p.email
-          FROM pemesanan pe
-          JOIN pembayaran pb ON pe.pemesananID = pb.pemesananID
-          JOIN jadwal j ON pe.jadwalID = j.jadwalID
-          JOIN lapangan l ON j.lapanganID = l.lapanganID
-          JOIN pengguna p ON pe.penggunaID = p.penggunaID
-          WHERE pb.order_id = ?";
-
-$stmt = $conn->prepare($query);
-$stmt->bind_param("s", $order_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$pesanan = $result->fetch_assoc();
-
-if (!$pesanan) {
-    echo "<script>alert('Data pesanan tidak ditemukan.'); window.location.href='home.php';</script>";
-    exit;
+// Format fungsi helper
+function formatRupiah($angka) {
+    return 'Rp ' . number_format($angka, 0, ',', '.');
 }
 
-// Format data
-$tanggalPesanan = date('l, d F Y', strtotime($pesanan['tanggalPemesanan']));
-$waktuMulai = date('H:i', strtotime($pesanan['waktuMulai']));
-$waktuSelesai = date('H:i', strtotime($pesanan['waktuSelesai']));
-$totalBiaya = number_format($pesanan['totalBiaya'], 0, ',', '.');
+function formatTanggal($tanggal) {
+    $bulan = [
+        1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    $split = explode('-', $tanggal);
+    return $split[2] . ' ' . $bulan[(int)$split[1]] . ' ' . $split[0];
+}
 
-// Translate hari ke Indonesia
-$hari = [
-    'Sunday' => 'Minggu',
-    'Monday' => 'Senin',
-    'Tuesday' => 'Selasa',
-    'Wednesday' => 'Rabu',
-    'Thursday' => 'Kamis',
-    'Friday' => 'Jumat',
-    'Saturday' => 'Sabtu'
-];
-$tanggalPesanan = str_replace(array_keys($hari), array_values($hari), $tanggalPesanan);
-
-// Bulan Indonesia
-$bulan = [
-    'January' => 'Januari', 'February' => 'Februari', 'March' => 'Maret',
-    'April' => 'April', 'May' => 'Mei', 'June' => 'Juni',
-    'July' => 'Juli', 'August' => 'Agustus', 'September' => 'September',
-    'October' => 'Oktober', 'November' => 'November', 'December' => 'Desember'
-];
-$tanggalPesanan = str_replace(array_keys($bulan), array_values($bulan), $tanggalPesanan);
+function getStatusBadge($status) {
+    $status_lower = strtolower(trim($status));
+    
+    // Status sukses/berhasil
+    if (in_array($status_lower, ['settlement', 'dibayar', 'success', 'paid', 'capture', 'completed'])) {
+        return '<span class="status-success">Berhasil Dibayar</span>';
+    } 
+    // Status pending
+    elseif (in_array($status_lower, ['pending', 'menunggu'])) {
+        return '<span class="status-pending">Menunggu Pembayaran</span>';
+    } 
+    // Status expired
+    elseif (in_array($status_lower, ['expire', 'expired', 'kadaluarsa'])) {
+        return '<span class="status-expired">Kadaluarsa</span>';
+    } 
+    // Status dibatalkan
+    elseif (in_array($status_lower, ['cancel', 'cancelled', 'canceled', 'batal', 'dibatalkan'])) {
+        return '<span class="status-cancelled">Dibatalkan</span>';
+    }
+    // Default - tampilkan status asli dengan style success
+    else {
+        return '<span class="status-success">' . ucfirst($status) . '</span>';
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -69,269 +98,373 @@ $tanggalPesanan = str_replace(array_keys($bulan), array_values($bulan), $tanggal
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lapangin.Aja | Detail Pesanan</title>
+    <title>Detail Pemesanan - Lapangin.Aja</title>
+    <link rel="stylesheet" href="assets/home.css">
+    <link rel="stylesheet" href="assets/nav.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ===== RESET DAN DASAR ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Poppins", sans-serif;
-        }
-
-        body {
-            background: linear-gradient(to bottom right, #dbe8ea, #c8d8dc);
-            min-height: 100vh;
-        }
-
-        /* ===== CARD DETAIL PESANAN ===== */
-        .container {
-            display: flex;
-            justify-content: center;
-            margin-top: 60px;
-            padding: 0 20px;
-        }
-
-        .card {
-            background: #eaf1ef;
-            width: 100%;
-            max-width: 750px;
+    
+        .detail-wrapper {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
             padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            animation: slideUp 0.5s ease-out;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 10px;
-            color: #222;
+        .page-title {
             font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
         }
 
-        .order-id {
-            text-align: center;
-            margin-bottom: 25px;
+        .order-id-text {
             color: #666;
             font-size: 14px;
+            margin-bottom: 5px;
         }
 
-        .status-badge {
+        .status-display {
             display: inline-block;
-            padding: 5px 15px;
+            padding: 6px 16px;
             border-radius: 15px;
-            font-weight: 600;
-            font-size: 12px;
-            margin-left: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 30px;
         }
 
         .status-success {
-            background: #d1fae5;
-            color: #065f46;
+            background: #d4edda;
+            color: #155724;
         }
 
         .status-pending {
-            background: #fef3c7;
-            color: #92400e;
+            background: #fff3cd;
+            color: #856404;
         }
 
-        .detail-box {
-            background: #f4f8f7;
-            border-radius: 8px;
-            padding: 12px 18px;
-            margin-bottom: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        .status-expired {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-cancelled {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .section-column {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
         }
 
-        .detail-box span {
-            font-weight: 600;
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin: 0 0 15px 0;
+        }
+
+        .info-box {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 4px solid #4CAF50;
+        }
+
+        .info-box-content {
+            font-size: 15px;
+            color: #333;
+        }
+
+        .info-label {
+            font-weight: normal;
             color: #666;
         }
 
-        .detail-box .value {
-            font-weight: 700;
-            color: #222;
+        .price-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-left: 4px solid #4CAF50;
         }
 
-        .total-box {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            border-radius: 8px;
-            padding: 15px 18px;
-            margin-top: 20px;
-            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
-        }
-
-        .total-box span {
-            font-weight: 600;
-        }
-
-        .total-box .value {
-            font-weight: 700;
-            font-size: 24px;
-        }
-
-        .btn-container {
+        .price-item {
             display: flex;
-            gap: 15px;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .price-total {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
             margin-top: 30px;
+            grid-column: 1 / -1;
         }
 
         .btn {
             flex: 1;
-            padding: 12px 30px;
-            border-radius: 8px;
+            padding: 14px 20px;
             border: none;
-            font-weight: 700;
+            border-radius: 8px;
+            font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
             text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-back {
-            background: #fff;
-            color: #222;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .btn-back:hover {
-            background: #dbe8ea;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            text-align: center;
+            font-size: 14px;
+            transition: all 0.3s ease;
         }
 
         .btn-primary {
-            background: #10b981;
+            background: #4CAF50;
             color: white;
-            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
         }
 
         .btn-primary:hover {
-            background: #059669;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(16, 185, 129, 0.4);
+            background: #45a049;
         }
 
-        footer {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
+        .btn-secondary {
+            background: white;
+            color: #4CAF50;
+            border: 2px solid #4CAF50;
         }
 
-        footer img {
-            height: 50px;
+        .btn-secondary:hover {
+            background: #f5f5f5;
         }
 
-        @media (max-width: 768px) {
-            .card {
+        .back-link {
+            display: inline-block;
+            color: #4CAF50;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state h2 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .empty-state p {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 968px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .detail-wrapper {
                 padding: 25px;
             }
 
-            h2 {
+            .page-title {
                 font-size: 22px;
             }
 
-            .btn-container {
+            .button-group {
                 flex-direction: column;
             }
 
-            .detail-box {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
+            .container {
+                margin: 20px auto;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            
+            header, .back-link, .button-group {
+                display: none;
+            }
+
+            .detail-wrapper {
+                box-shadow: none;
             }
         }
     </style>
 </head>
 <body>
-<header>
-    <?php include 'includes/nav.php'; ?>
+
+<header class="header">
+<?php include 'includes/nav.php'; ?>
 </header>
 
-    <div class="container">
-        <div class="card">
-            <h2>📋 Detail Pesanan</h2>
-            <div class="order-id">
-                Order ID: <strong><?= htmlspecialchars($order_id) ?></strong>
-                <span class="status-badge <?= $pesanan['statusPembayaran'] == 'success' ? 'status-success' : 'status-pending' ?>">
-                    <?= $pesanan['statusPembayaran'] == 'success' ? '✅ Berhasil' : '⏳ Pending' ?>
-                </span>
-            </div>
 
-            <div class="detail-box">
-                <span>👤 Nama Pemesan:</span>
-                <span class="value"><?= htmlspecialchars($pesanan['namaPengguna']) ?></span>
-            </div>
+<div class="container">
+    <a href="pembayaran_sukses.php" class="back-link">← Kembali</a>
 
-            <div class="detail-box">
-                <span>📧 Email:</span>
-                <span class="value"><?= htmlspecialchars($pesanan['email']) ?></span>
-            </div>
+    <?php if ($detail_pesanan): ?>
+    <div class="detail-wrapper">
+        
+        <div class="page-title">Detail Pemesanan</div>
+        <div class="order-id-text">Order ID: <strong><?php echo htmlspecialchars($order_id); ?></strong></div>
+        <?php 
+        // Prioritas: gunakan status dari pemesanan (dibayar) jika ada, baru status pembayaran
+        $display_status = !empty($detail_pesanan['statusPemesanan']) ? $detail_pesanan['statusPemesanan'] : ($detail_pesanan['status'] ?? 'pending');
+        echo getStatusBadge($display_status); 
+        ?>
 
-            <div class="detail-box">
-                <span>🏸 Jumlah Lapangan:</span>
-                <span class="value">1</span>
-            </div>
+        <div class="content-grid">
+            
+            <!-- Kolom Kiri -->
+            <div class="section-column">
+                <!-- Informasi Lapangan -->
+                <div class="section-title">Informasi Lapangan</div>
+                
+                <div class="info-box">
+                    <div class="info-box-content">
+                        <span class="info-label">Venue:</span> 
+                        <strong><?php echo htmlspecialchars($detail_pesanan['namaVenue'] ?? '-'); ?></strong>
+                    </div>
+                </div>
 
-            <div class="detail-box">
-                <span>🔢 ID Jadwal:</span>
-                <span class="value">#<?= $pesanan['jadwalID'] ?></span>
-            </div>
+                <div class="info-box">
+                    <div class="info-box-content">
+                        <span class="info-label">Nama Lapangan:</span> 
+                        <strong><?php echo htmlspecialchars($detail_pesanan['namaLapangan']); ?></strong>
+                    </div>
+                </div>
 
-            <div class="detail-box">
-                <span>🏟️ Nama Lapangan:</span>
-                <span class="value"><?= htmlspecialchars($pesanan['namaLapangan']) ?></span>
-            </div>
+                <div class="info-box">
+                    <div class="info-box-content">
+                        <span class="info-label">Tanggal Main:</span> 
+                        <strong>
+                            <?php 
+                            if (!empty($detail_pesanan['waktuMulai'])) {
+                                echo formatTanggal(date('Y-m-d', strtotime($detail_pesanan['waktuMulai'])));
+                            } else {
+                                echo '-';
+                            }
+                            ?>
+                        </strong>
+                    </div>
+                </div>
 
-            <div class="detail-box">
-                <span>📅 Hari, Tanggal:</span>
-                <span class="value"><?= $tanggalPesanan ?></span>
-            </div>
+                <div class="info-box">
+                    <div class="info-box-content">
+                        <span class="info-label">Waktu Main:</span> 
+                        <strong><?php echo date('H:i', strtotime($detail_pesanan['waktuMulai'])) . ' - ' . date('H:i', strtotime($detail_pesanan['waktuSelesai'])); ?> WIB</strong>
+                    </div>
+                </div>
 
-            <div class="detail-box">
-                <span>🕐 Waktu:</span>
-                <span class="value"><?= $waktuMulai ?> - <?= $waktuSelesai ?></span>
-            </div>
-
-            <div class="detail-box">
-                <span>💳 Metode Pembayaran:</span>
-                <span class="value"><?= ucfirst($pesanan['metodePembayaran']) ?></span>
-            </div>
-
-            <div class="total-box">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span>💰 Total Pembayaran:</span>
-                    <span class="value">Rp <?= $totalBiaya ?></span>
+                <div class="info-box">
+                    <div class="info-box-content">
+                        <span class="info-label">Durasi:</span> 
+                        <strong>
+                            <?php 
+                            $start = new DateTime($detail_pesanan['waktuMulai']);
+                            $end = new DateTime($detail_pesanan['waktuSelesai']);
+                            $diff = $start->diff($end);
+                            echo $diff->h . ' Jam';
+                            ?>
+                        </strong>
+                    </div>
                 </div>
             </div>
 
-            <div class="btn-container">
-                <a href="home.php" class="btn btn-back">🏠 Kembali ke Home</a>
-                <a href="riwayat_pemesanan.php" class="btn btn-primary">📜 Lihat Semua Pesanan</a>
+            <!-- Kolom Kanan -->
+            <div class="section-column">
+                <!-- Informasi Pemesanan -->
+                <div class="section-title">Informasi Pemesanan</div>
+
+                <div class="info-box">
+                    <div class="info-box-content">
+                        <span class="info-label">ID Pemesanan:</span> 
+                        <strong>#<?php echo htmlspecialchars($detail_pesanan['pemesananID']); ?></strong>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-box-content">
+                        <span class="info-label">Tanggal Pemesanan:</span> 
+                        <strong>
+                            <?php 
+                            if (isset($detail_pesanan['tanggalPemesanan'])) {
+                                echo date('d/m/Y H:i', strtotime($detail_pesanan['tanggalPemesanan'])) . ' WIB';
+                            } else {
+                                echo '-';
+                            }
+                            ?>
+                        </strong>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-box-content">
+                        <span class="info-label">Metode Pembayaran:</span> 
+                        <strong><?php echo strtoupper(htmlspecialchars($detail_pesanan['metodePembayaran'] ?? '-')); ?></strong>
+                    </div>
+                </div>
+            
+                    <div class="price-total">
+                        <span>Total Pembayaran</span>
+                        <span><?php echo formatRupiah($detail_pesanan['grossAmount'] ?? $detail_pesanan['totalBiaya'] ?? 0); ?></span>
+                    </div>
+                </div>
             </div>
+
+        
+                <a href="homepage.php" class="btn btn-primary">
+                    🏠 Kembali ke Beranda
+                </a>
+            </div>
+
         </div>
+
     </div>
 
-    <!-- ===== FOOTER IMAGE ===== -->
-    <footer>
-        <img src="assets/image/image 4.png" alt="Logo Shuttlecock">
-    </footer>
+    <?php else: ?>
+    <div class="detail-wrapper">
+        <div class="empty-state">
+            <h2>Pemesanan Tidak Ditemukan</h2>
+            <p>Maaf, data pemesanan dengan Order ID tersebut tidak ditemukan di sistem kami.</p>
+            <a href="homepage.php" class="btn btn-primary">Kembali ke Beranda</a>
+        </div>
+    </div>
+    <?php endif; ?>
+
+</div>
 
 </body>
 </html>

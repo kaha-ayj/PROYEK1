@@ -30,12 +30,30 @@ if (isset($_POST['booking'])) {
 // --- AMBIL DATA VENUE YANG DIPILIH ---
 $venue_data = null;
 if ($venue_id) {
-    $query_venue = "SELECT venueID, namaVenue, alamat FROM venue WHERE venueID = ?";
+    $query_venue = "SELECT venueID, namaVenue, alamat, foto FROM venue WHERE venueID = ?";
     $stmt = mysqli_prepare($conn, $query_venue);
     mysqli_stmt_bind_param($stmt, "i", $venue_id);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     $venue_data = mysqli_fetch_assoc($result);
+    
+    // Tentukan foto venue
+    if ($venue_data) {
+        $foto = $venue_data['foto'] ?? null;
+        
+        // Jika tidak ada foto di database, gunakan foto berbeda berdasarkan ID venue
+        if (empty($foto) || !file_exists($foto)) {
+            $venue_photos = [
+                1 => "assets/image/venue1.jpg",
+                2 => "assets/image/venue2.jpg",
+                3 => "assets/image/venue3.jpg",
+            ];
+            $venue_data['foto'] = $venue_photos[$venue_id] ?? "assets/image/lapangan.png";
+        } else {
+            $venue_data['foto'] = $foto;
+        }
+    }
+    
     mysqli_stmt_close($stmt);
 }
 
@@ -158,8 +176,8 @@ mysqli_close($conn);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             padding: 40px;
             display: grid;
-            grid-template-columns: 350px 1fr;
-            gap: 50px;
+            grid-template-columns: 320px 1fr;
+            gap: 20px;
             margin-top: 20px;
         }
 
@@ -235,33 +253,66 @@ mysqli_close($conn);
         .right {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 20px;
         }
 
         .date-header {
             font-size: 1.3em;
             font-weight: 700;
             color: #333;
-            margin-left: 10px;
-            margin-top: 20px;
+            margin-left: 0px;
+            margin-top: 30px;
         }
 
         .jadwal-calendar-wrapper {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        /* Wrapper untuk kalender dan tombol booking */
+        .calendar-and-button-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         /* SLOT JAM */
         .slot-container {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            background: white;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 0;
         }
 
-        .slot {
-            padding: 18px 20px;
+        /* Scrollbar styling */
+        .slot-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .slot-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
             border-radius: 10px;
+        }
+
+        .slot-container::-webkit-scrollbar-thumb {
+            background: #48cae4;
+            border-radius: 10px;
+        }
+
+        .slot-container::-webkit-scrollbar-thumb:hover {
+            background: #0096c7;
+        }
+
+        .slot-item {
+            padding: 18px 20px;
+            border-bottom: 1px solid #e0e0e0;
             text-align: left;
             font-weight: 600;
             font-size: 0.95em;
@@ -271,7 +322,31 @@ mysqli_close($conn);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: inherit;
+            color: #333;
+            background: white;
+        }
+
+        .slot-item:last-child {
+            border-bottom: none;
+        }
+
+        .slot-item:hover {
+            background: #f0f9ff;
+        }
+
+        .slot-item.selected {
+            background: #48cae4;
+            color: white;
+        }
+
+        .slot-item.disabled {
+            background: #ff4757;
+            color: white;
+            cursor: not-allowed;
+        }
+
+        .slot-item.disabled:hover {
+            background: #ff4757;
         }
 
         .slot-status {
@@ -284,35 +359,9 @@ mysqli_close($conn);
             font-weight: 700;
         }
 
-        .slot.tersedia {
-            background: white;
-            border: 2px solid #e0e0e0;
-            color: #333;
-        }
-
-        .slot.tersedia:hover {
-            border-color: #48cae4;
-            background: #f0f9ff;
-            transform: translateX(5px);
-        }
-
-        .slot.tersedia.selected {
-            background: #48cae4;
-            border-color: #48cae4;
-            color: white;
-        }
-
-        .slot.dibooking {
-            background: #ff4757;
-            border: 2px solid #ff4757;
-            color: white;
-            cursor: not-allowed;
-            opacity: 0.9;
-        }
-
         .slot-empty {
             text-align: center;
-            padding: 50px;
+            padding: 50px 20px;
             color: #999;
             font-size: 0.95em;
         }
@@ -401,12 +450,12 @@ mysqli_close($conn);
 
         /* TOMBOL PILIH JADWAL */
         .btn-pilih-wrapper {
-            margin-top: 20px;
-            text-align: center;
+            width: 100%;
         }
         
         .btn-pilih {
-            padding: 15px 30px;
+            width: 100%;
+            padding: 15px 40px;
             border-radius: 12px;
             border: none;
             background: linear-gradient(135deg, #48cae4 0%, #0096c7 100%);
@@ -418,7 +467,6 @@ mysqli_close($conn);
             text-transform: uppercase;
             letter-spacing: 1px;
             box-shadow: 0 4px 15px rgba(72, 202, 228, 0.3);
-            min-width: 200px;
         }
 
         .btn-pilih:hover:not(:disabled) {
@@ -468,15 +516,29 @@ mysqli_close($conn);
         }
 
         .back-link {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             margin-bottom: 20px;
-            color: #48cae4;
+            color: #ffffff;
+            background: linear-gradient(135deg, #48cae4 0%, #0096c7 100%);
             text-decoration: none;
             font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(72, 202, 228, 0.3);
         }
 
         .back-link:hover {
-            text-decoration: underline;
+            background: linear-gradient(135deg, #0096c7 0%, #023e8a 100%);
+            transform: translateX(-3px);
+            box-shadow: 0 4px 12px rgba(72, 202, 228, 0.5);
+        }
+
+        .back-link i {
+            font-size: 0.9em;
         }
 
         @media (max-width: 968px) {
@@ -497,12 +559,14 @@ mysqli_close($conn);
 </header>
 
 <main class="container">
-    <!-- Link kembali ke halaman venue -->
-    <a href="jadwal_lapangan1.php" class="back-link">
-        <i class="fas fa-arrow-left"></i> Kembali ke Daftar Venue
-    </a>
-
     <div class="content">
+        <!-- Link kembali di dalam content -->
+        <div style="grid-column: 1 / -1;">
+            <a href="jadwal_lapangan1.php" class="back-link">
+                <i class="fas fa-arrow-left"></i> Kembali ke Daftar Venue
+            </a>
+        </div>
+
         <!-- LEFT SECTION -->
         <div class="left">
             <?php if ($venue_data): ?>
@@ -516,7 +580,7 @@ mysqli_close($conn);
                 </div>
             <?php endif; ?>
 
-            <img src="assets/image/lapangan.png" alt="Lapangan" class="lapangan-image">
+            <img src="<?php echo htmlspecialchars($venue_data['foto'] ?? 'assets/image/lapangan.png'); ?>" alt="<?php echo htmlspecialchars($venue_data['namaVenue']); ?>" class="lapangan-image">
             
             <h4>Pilih Lapangan:</h4>
             
@@ -568,61 +632,65 @@ mysqli_close($conn);
                 <div class="date-header">Jadwal untuk <?php echo date("d F Y", $timestamp); ?></div>
 
                 <div class="jadwal-calendar-wrapper">
-                    <!-- SLOT JAM -->
+                    <!-- SLOT JAM (SCROLLABLE LIST) -->
                     <div class="slot-container">
-                        <?php
-                        if (empty($jadwal_slots)) {
-                            echo "<div class='slot-empty'>Tidak ada jadwal tersedia untuk tanggal ini</div>";
-                        } else {
-                            foreach ($jadwal_slots as $slot) {
-                                $jam = date('H.i', strtotime($slot['waktuMulai'])) . " - " . date('H.i', strtotime($slot['waktuSelesai']));
-                                
-                                if ($slot['status'] == 'Tersedia') {
-                                    $selectedClass = ($selectedJadwalID == $slot['jadwalID']) ? ' selected' : '';
-                                    
+                        <?php if (empty($jadwal_slots)): ?>
+                            <div class="slot-empty">Tidak ada jadwal tersedia untuk tanggal ini</div>
+                        <?php else: ?>
+                            <?php foreach ($jadwal_slots as $slot): ?>
+                                <?php
+                                $jam = date('H.i', strtotime($slot['waktuMulai'])) . " - " .
+                                       date('H.i', strtotime($slot['waktuSelesai']));
+                                ?>
+                                <?php if ($slot['status'] == 'Tersedia'): ?>
+                                    <?php
+                                    $selectedClass = ($selectedJadwalID == $slot['jadwalID']) ? 'selected' : '';
                                     $linkParam = "venue_id=" . urlencode($venue_id);
                                     $linkParam .= "&lapangan_id=" . urlencode($selectedLapanganID);
                                     $linkParam .= "&tanggal=" . urlencode($selectedDate);
                                     $linkParam .= "&jadwal_id=" . $slot['jadwalID'];
-                                    
-                                    echo "<a href='jadwal_lapangan2.php?$linkParam' class='slot tersedia$selectedClass'>";
-                                    echo "<span class='slot-status'>Bisa Dibooking</span>";
-                                    echo "<span class='slot-time'>$jam</span>";
-                                    echo "</a>";
-                                } else {
-                                    echo "<div class='slot dibooking'>";
-                                    echo "<span class='slot-status'>Sudah Dibooking</span>";
-                                    echo "<span class='slot-time'>$jam</span>";
-                                    echo "</div>";
-                                }
-                            }
-                        }
-                        ?>
+                                    ?>
+                                    <a href="jadwal_lapangan2.php?<?php echo $linkParam; ?>" 
+                                       class="slot-item <?php echo $selectedClass; ?>">
+                                        <span class="slot-time"><?php echo $jam; ?></span>
+                                        <span class="slot-status">(Bisa Dibooking)</span>
+                                    </a>
+                                <?php else: ?>
+                                    <div class="slot-item disabled">
+                                        <span class="slot-time"><?php echo $jam; ?></span>
+                                        <span class="slot-status">(Sudah Dibooking)</span>
+                                    </div>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
 
-                    <!-- KALENDER -->
-                    <div class="calendar-wrapper">
-                        <div class="calendar-header">
-                            <a href="jadwal_lapangan2.php?tanggal=<?php echo $prevMonthDate; ?><?php echo $param; ?>" class="calendar-nav">&lt;</a>
-                            <h3><?php echo $currentMonthName_Year; ?></h3>
-                            <a href="jadwal_lapangan2.php?tanggal=<?php echo $nextMonthDate; ?><?php echo $param; ?>" class="calendar-nav">&gt;</a>
+                    <!-- KALENDER & TOMBOL BOOKING -->
+                    <div class="calendar-and-button-wrapper">
+                        <div class="calendar-wrapper">
+                            <div class="calendar-header">
+                                <a href="jadwal_lapangan2.php?tanggal=<?php echo $prevMonthDate; ?><?php echo $param; ?>" class="calendar-nav">&lt;</a>
+                                <h3><?php echo $currentMonthName_Year; ?></h3>
+                                <a href="jadwal_lapangan2.php?tanggal=<?php echo $nextMonthDate; ?><?php echo $param; ?>" class="calendar-nav">&gt;</a>
+                            </div>
+                            <div class="calendar">
+                                <?php buatKalender($currentYear, $currentMonth, $selectedDate, $param); ?>
+                            </div>
                         </div>
-                        <div class="calendar">
-                            <?php buatKalender($currentYear, $currentMonth, $selectedDate, $param); ?>
+
+                        <!-- TOMBOL BOOKING (TEPAT DI BAWAH KALENDER) -->
+                        <div class="btn-pilih-wrapper">
+                            <?php if ($syaratTerpenuhi): ?>
+                                <!-- Form untuk proses booking -->
+                                <form method="POST" action="">
+                                    <input type="hidden" name="jadwal_id" value="<?php echo $selectedJadwalID; ?>">
+                                    <button type="submit" name="booking" class="btn-pilih">Booking Sekarang</button>
+                                </form>
+                            <?php else: ?>
+                                <button type="button" class="btn-pilih" disabled>Pilih Jadwal Terlebih Dahulu</button>
+                            <?php endif; ?>
                         </div>
                     </div>
-                </div>
-
-                <div class="btn-pilih-wrapper">
-                    <?php if ($syaratTerpenuhi): ?>
-                        <!-- Form untuk proses booking -->
-                        <form method="POST" action="">
-                            <input type="hidden" name="jadwal_id" value="<?php echo $selectedJadwalID; ?>">
-                            <button type="submit" name="booking" class="btn-pilih">Booking Sekarang</button>
-                        </form>
-                    <?php else: ?>
-                        <button type="button" class="btn-pilih" disabled>Pilih Jadwal Terlebih Dahulu</button>
-                    <?php endif; ?>
                 </div>
             <?php endif; ?>
         </div>

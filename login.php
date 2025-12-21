@@ -1,57 +1,48 @@
 <?php
 session_start();
+include"config/koneksi.php";
 
-include("config/koneksi.php");
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = $_POST['email'];
+    $email    = strtolower(trim($_POST['email']));
     $password = $_POST['password'];
 
-    $stmt = $conn->prepare("SELECT penggunaID, nama, email, password, role FROM pengguna WHERE email = ?");
+    $stmt = $conn->prepare(
+        "SELECT penggunaID, nama, email, password, role 
+         FROM pengguna WHERE email = ?"
+    );
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
-
-        if (password_verify($password, $user['password'])) {
-
-            // Tentukan role
-            if ($email === 'admin@lapanginaja.com') {
-                $user['role'] = 'admin';
-            } else {
-                $user['role'] = 'penyewa';
-            }
-
-            // Simpan ke session
-            $_SESSION['user'] = [
-                'id' => $user['penggunaID'],
-                'nama' => $user['nama'],
-                'email' => $user['email'],
-                'role' => $user['role']
-            ];
-
-            if ($user['role'] === 'admin') {
-                echo "<script>alert('Login berhasil sebagai admin!'); window.location='admin/dashboard.php';</script>";
-            } else {
-                echo "<script>alert('Login berhasil!'); window.location='homepage.php';</script>";
-            }
-            exit;
-
-        } else {
-            echo "<script>alert('Password salah!'); window.location='login.php';</script>";
-            exit;
-        }
-
-    } else {
-        echo "<script>alert('Email tidak ditemukan!'); window.location='login.php';</script>";
+    if ($result->num_rows === 0) {
+        echo "<script>alert('Email tidak ditemukan'); window.location='login.php';</script>";
         exit;
     }
 
-    $stmt->close();
+    $user = $result->fetch_assoc();
+
+    if (!password_verify($password, $user['password'])) {
+        echo "<script>alert('Password salah'); window.location='login.php';</script>";
+        exit;
+    }
+
+    $_SESSION['user'] = [
+        'id' => $user['penggunaID'],
+        'nama' => $user['nama'],
+        'email' => $user['email'],
+        'role' => $user['role']
+    ];
+
+    if ($user['role'] === 'admin') {
+        header("Location: admin/dashboard.php");
+    } else {
+        header("Location: homepage.php");
+    }
+    exit;
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>

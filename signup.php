@@ -1,37 +1,38 @@
 <?php
 include("config/koneksi.php");
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $nama = $_POST['nama'];
-    $email = $_POST['email'];
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $nama  = trim($_POST['nama']);
+    $email = strtolower(trim($_POST['email']));
     $password = $_POST['password'];
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    // Cek apakah email sudah terdaftar
-    $stmt = $conn->prepare("SELECT password FROM pengguna WHERE email = ?");
-    $stmt->bind_param("s", $email);
+    // ROLE FIX
+    $role = str_ends_with($email, '@lapanginaja.com') ? 'admin' : 'penyewa';
+
+    $cek = $conn->prepare("SELECT penggunaID FROM pengguna WHERE email = ?");
+    $cek->bind_param("s", $email);
+    $cek->execute();
+
+    if ($cek->get_result()->num_rows > 0) {
+        echo "<script>alert('Email sudah terdaftar'); window.location='signup.php';</script>";
+        exit;
+    }
+
+    $hash = password_hash($password, PASSWORD_DEFAULT);
+
+    $stmt = $conn->prepare(
+        "INSERT INTO pengguna (nama, email, password, role)
+         VALUES (?, ?, ?, ?)"
+    );
+    $stmt->bind_param("ssss", $nama, $email, $hash, $role);
     $stmt->execute();
-    $result = $stmt->get_result();
 
-    if ($row = $result->fetch_assoc()) {
-        echo "<script>alert('Email sudah terdaftar!'); window.location='signup.php';</script>";
-        exit;
-    }
-
-    // Insert data baru
-    $stmt = $conn->prepare("INSERT INTO pengguna (nama, email, password, role) VALUES (?, ?, ?, 'penyewa')");
-    $stmt->bind_param("sss", $nama, $email, $hashed_password);
-
-    if ($stmt->execute()) {
-        header("Location: login.php");
-        exit;
-    } else {
-        echo "<script>alert('Terjadi kesalahan saat mendaftar.'); window.location='signup.php';</script>";
-    }
-
-    $stmt->close();
+    echo "<script>alert('Registrasi berhasil'); window.location='login.php';</script>";
+    exit;
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="id">

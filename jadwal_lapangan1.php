@@ -5,43 +5,50 @@ include 'config/koneksi.php';
 // Ambil data VENUE dari database
 $venue_list = [];
 
-// Query untuk mengambil venue dari database
-$query = "SELECT v.venueID, v.namaVenue, v.alamat 
-          FROM venue v 
-          ORDER BY v.namaVenue";
+$query = "SELECT venueID, namaVenue, alamat, foto 
+          FROM venue 
+          ORDER BY namaVenue";
 
 $result = mysqli_query($conn, $query);
 
 if ($result && mysqli_num_rows($result) > 0) {
-    // Jika ada data di database, ambil dari database
+
     while ($row = mysqli_fetch_assoc($result)) {
+
+        // Tentukan foto venue (pakai DB, fallback jika kosong / file tidak ada)
+        $fotoVenue = "assets/image/lapangan.png";
+        if (!empty($row['foto']) && file_exists($row['foto'])) {
+            $fotoVenue = $row['foto'];
+        }
+
         $venue_list[] = [
             "id" => $row['venueID'],
             "nama" => $row['namaVenue'],
             "deskripsi" => $row['alamat'] ?? "Lokasi venue olahraga terbaik",
-            "gambar" => "assets/image/lapangan.png"
+            "gambar" => $fotoVenue
         ];
     }
+
 } else {
-    // Jika tidak ada data di database, gunakan data dummy
+    // Data dummy (jaga-jaga kalau DB kosong)
     $venue_list = [
         [
             "id" => 1,
             "nama" => "Kelapa Gading",
             "deskripsi" => "Jl. Raya Panyindangan Wetan, Panyindangan Wetan, Kec. Sindang, Kabupaten Indramayu.",
-            "gambar" => "assets/image/lapangan.png"
+            "gambar" => "assets/image/lap1.jpg"
         ],
         [
             "id" => 2,
             "nama" => "GOR MINI JATIBARANG",
-            "deskripsi" => "Jl. Mayor Dasuki no. 159, Desa jatibarang, Kec. Jatibarang, Kabupaten Indramayu.",
-            "gambar" => "assets/image/lapangan.png"
+            "deskripsi" => "Jl. Mayor Dasuki no. 159, Desa Jatibarang, Kec. Jatibarang, Kabupaten Indramayu.",
+            "gambar" => "assets/image/lap2.jpg"
         ],
         [
             "id" => 3,
             "nama" => "ABRAL",
             "deskripsi" => "Jl. Raya Panyindangan Wetan, Panyindangan Wetan, Kec. Sindang, Kabupaten Indramayu.",
-            "gambar" => "assets/image/lapangan.png"
+            "gambar" => "assets/image/lap3.jpg"
         ],
     ];
 }
@@ -58,17 +65,10 @@ mysqli_close($conn);
     <link rel="stylesheet" href="assets/nav.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title>Lapangin.Aja | Pilih Venue</title>
-    <style>
-        /* Konten utama */
-        main {
-            padding: 40px 80px;
-        }
 
-        h2 {
-            font-size: 28px;
-            color: #222;
-            margin-bottom: 10px;
-        }
+    <style>
+        main { padding: 40px 80px; }
+        h2 { font-size: 28px; color: #222; margin-bottom: 10px; }
 
         .filter {
             background: #8fa1a3;
@@ -111,9 +111,7 @@ mysqli_close($conn);
             margin-right: 20px;
         }
 
-        .card-content {
-            flex: 1;
-        }
+        .card-content { flex: 1; }
 
         .card-content h3 {
             margin: 0;
@@ -130,7 +128,6 @@ mysqli_close($conn);
 
         .lihat-jadwal {
             display: flex;
-            align-items: center;
             justify-content: flex-end;
         }
 
@@ -142,7 +139,7 @@ mysqli_close($conn);
             text-decoration: none;
             font-weight: 600;
             font-size: 14px;
-            transition: all 0.3s;
+            transition: 0.3s;
         }
 
         .btn-nearby:hover {
@@ -160,7 +157,6 @@ mysqli_close($conn);
             margin-top: 5px;
         }
 
-        /* Footer dekorasi */
         .footer-icon {
             position: fixed;
             bottom: 15px;
@@ -168,32 +164,37 @@ mysqli_close($conn);
             width: 80px;
             opacity: 0.6;
         }
-
     </style>
 </head>
+
 <body>
 <header class="header">
-<?php include 'includes/nav.php'; ?>
+    <?php include 'includes/nav.php'; ?>
 </header>
+
 <main>
     <h2>Pilih Venue</h2>
-    <div class="filter">Pilih lokasi venue untuk melihat lapangan yang tersedia</div>
+    <div class="filter">Pilih lokasi</div>
 
     <div class="venue-container">
         <?php foreach ($venue_list as $venue): ?>
         <div class="card">
-            <img src="<?php echo $venue['gambar']; ?>" alt="<?php echo $venue['nama']; ?>">
+            <img src="<?php echo htmlspecialchars($venue['gambar']); ?>" 
+                 alt="<?php echo htmlspecialchars($venue['nama']); ?>">
+
             <div class="card-content">
-                <h3><?php echo $venue['nama']; ?></h3>
-                <p><?php echo $venue['deskripsi']; ?></p>
+                <h3><?php echo htmlspecialchars($venue['nama']); ?></h3>
+                <p><?php echo htmlspecialchars($venue['deskripsi']); ?></p>
+
                 <div class="info-lapangan">
                     <i class="fas fa-map-marker-alt"></i> Klik untuk melihat daftar lapangan
                 </div>
-                <div class="lihat-jadwal"> 
-                    <!-- Mengirimkan ID VENUE yang dipilih ke halaman lapangan2.php -->
-                    <a href="jadwal_lapangan2.php?venue_id=<?php echo $venue['id']; ?>" class="btn-nearby"> 
+
+                <div class="lihat-jadwal">
+                    <a href="jadwal_lapangan2.php?venue_id=<?php echo (int)$venue['id']; ?>" 
+                       class="btn-nearby">
                         Pilih Venue ›
-                    </a> 
+                    </a>
                 </div>
             </div>
         </div>
