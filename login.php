@@ -106,6 +106,48 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         right: 60px;   
         bottom: 50px;  
     }
+    /* Container untuk mengatur posisi gambar */
+.hero-image-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Class khusus untuk gambar pemain */
+.img-hero-player {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    /* Memberikan efek bayangan agar gambar terlihat lebih hidup */
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
+    /* Animasi halus saat halaman dimuat */
+    animation: fadeInUp 1s ease-out;
+}
+
+/* Animasi sederhana agar gambar muncul dari bawah */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsif: Jika dibuka di HP, gambar tidak terlalu besar */
+@media (max-width: 768px) {
+    .hero-image-container {
+        order: -1; /* Gambar muncul di atas teks saat di HP */
+        margin-bottom: 20px;
+    }
+    .img-hero-player {
+        max-height: 300px;
+    }
+}
     </style>
 </head>
 
@@ -145,7 +187,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </div>
         </div>
 
-        <img src="assets/image/image2.png" alt="A badminton player celebrating a point" class="player-image">
+    
     </div>
 </body>
 </html>

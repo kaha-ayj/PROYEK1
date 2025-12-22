@@ -1,5 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+/* ===== IMPORT FONT ===== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
+/* ===== VARIABLES ===== */
+:root {
+    --primary-color: #2b2b2b;
+    --secondary-color: #dfeef0;
+    --accent-color: #b8cfd3;
+    --text-color: #222;
+    --light-text: #4a4a4a;
+    --white: #ffffff;
+    --border-radius: 10px;
+    --transition: 0.3s;
+}
+
+/* ===== GLOBAL STYLES ===== */
 * {
     margin: 0;
     padding: 0;
@@ -8,11 +22,12 @@
 }
 
 body {
-    background: linear-gradient(180deg, #dfeef0 0%, #b8cfd3 100%);
-    color: #222;
+    background: linear-gradient(180deg, var(--secondary-color) 0%, var(--accent-color) 100%);
+    color: var(--text-color);
     min-height: 100vh;
 }
 
+/* ===== HEADER ===== */
 header {
     display: flex;
     justify-content: space-between;
@@ -21,27 +36,33 @@ header {
 }
 
 .logo img {
-    width: 200px; 
+    width: 200px;
     height: auto;
     transform: scale(1.2);
 }
 
+.buttons {
+    display: flex;
+    align-items: center;
+}
+
 .buttons button {
-    background: #2b2b2b;
-    color: white;
+    background: var(--primary-color);
+    color: var(--white);
     border: none;
     padding: 8px 20px;
     margin-left: 10px;
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
-    transition: 0.3s;
+    transition: var(--transition);
 }
 
 .buttons button:hover {
     opacity: 0.8;
 }
 
+/* ===== HERO SECTION ===== */
 .hero {
     display: flex;
     justify-content: space-between;
@@ -59,7 +80,7 @@ header {
 
 .hero h2 {
     font-size: 32px;
-    color: #1d1d1d;
+    color: var(--text-color);
     font-weight: 700;
     margin-bottom: 10px;
 }
@@ -72,21 +93,21 @@ header {
 }
 
 .hero p {
-    color: #4a4a4a;
+    color: var(--light-text);
     line-height: 1.7;
     font-size: 14px;
     margin-bottom: 30px;
 }
 
 .hero .cta {
-    background-color: #2b2b2b;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--white);
     padding: 12px 24px;
     border: none;
-    border-radius: 10px;
+    border-radius: var(--border-radius);
     cursor: pointer;
     font-weight: 600;
-    transition: 0.3s;
+    transition: var(--transition);
 }
 
 .hero .cta:hover {
@@ -97,19 +118,22 @@ header {
     width: 350px;
 }
 
-/* ===== VARIABLES ===== */
-:root {
-    --primary-color: #2b2b2b;
-    --secondary-color: #dfeef0;
-    --accent-color: #b8cfd3;
-    --text-color: #222;
-    --light-text: #4a4a4a;
-    --white: #ffffff;
-    --border-radius: 10px;
-    --transition: 0.3s;
+/* ===== WELCOME TITLE ===== */
+.welcome-title {
+    font-size: 32px;
+    color: #000000;
+    font-weight: 600;
+    margin-bottom: 5px;
 }
 
-/* ==== Auth / Form Section ==== */
+.welcome-subtitle {
+    font-size: 20px;
+    color: #000000;
+    font-weight: 500;
+    margin-bottom: 30px;
+}
+
+/* ===== AUTH NAV ===== */
 .auth-nav {
     display: flex;
     justify-content: center;
@@ -141,6 +165,7 @@ header {
     opacity: 0.8;
 }
 
+/* ===== FORM ===== */
 .form-title {
     text-align: center;
     font-size: 24px;
@@ -203,229 +228,6 @@ header {
     color: rgba(255,255,255,0.5);
 }
 
-.submit-area {
-    position: relative;
-    margin-top: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.shuttlecock-image {
-    width: 40px;
-    height: auto;
-    margin-bottom: 10px;
-}
-
-.submit-btn {
-    background-color: var(--primary-color);
-    color: var(--white);
-    border: none;
-    padding: 12px 40px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: var(--transition);
-    width: 100%;
-    margin-bottom: 15px;
-}
-
-.submit-btn:hover {
-    background-color: #444;
-}
-
-.signin-link {
-    font-size: 14px;
-    color: var(--light-text);
-    text-decoration: none;
-    transition: var(--transition);
-}
-
-.signin-link:hover {
-    color: var(--primary-color);
-}
-
-/* ===== RESPONSIVE FIXES ===== */
-@media (max-width: 1024px) {
-    header {
-        padding: 20px 40px;
-    }
-
-    .hero {
-        flex-direction: column;
-        padding: 40px 20px;
-        gap: 20px;
-    }
-
-    .hero .text {
-        max-width: 100%;
-        text-align: center;
-        align-items: center;
-    }
-
-    .hero .image img {
-        width: 250px;
-    }
-
-    .buttons button {
-        padding: 8px 16px;
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 768px) {
-    header {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 15px 20px;
-        gap: 15px;
-    }
-
-    .logo img {
-        width: 150px;
-    }
-
-    .buttons {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .hero {
-        padding: 30px 15px;
-        gap: 15px;
-    }
-
-    .hero .text {
-        max-width: 100%;
-    }
-
-    .hero h2 {
-        font-size: 24px;
-    }
-
-    .hero h3 {
-        font-size: 18px;
-    }
-
-    .hero p {
-        font-size: 13px;
-    }
-
-    .hero .image img {
-        width: 200px;
-    }
-
-    .submit-btn {
-        padding: 12px 20px;
-        font-size: 14px;
-    }
-
-    .registration-form {
-        padding: 0 10px;
-    }
-}
-
-@media (max-width: 480px) {
-    header {
-        padding: 10px 15px;
-    }
-
-    .logo img {
-        width: 130px;
-    }
-
-    .hero h2 {
-        font-size: 20px;
-    }
-
-    .hero h3 {
-        font-size: 16px;
-    }
-
-    .hero p {
-        font-size: 12px;
-    }
-
-    .hero .image img {
-        width: 150px;
-    }
-
-    .submit-btn {
-        padding: 10px 15px;
-        font-size: 14px;
-    }
-
-    .auth-btn {
-        padding: 6px 12px;
-        font-size: 12px;
-    }
-}
-
-
-.form-title {
-    text-align: center;
-    font-size: 24px;
-    margin-bottom: 20px;
-    color: var(--primary-color);
-}
-
-.google-logo {
-    display: block;
-    margin: 0 auto 10px;
-    width: 40px;
-    height: 40px;
-}
-
-.google-text {
-    text-align: center;
-    font-size: 14px;
-    color: var(--light-text);
-    margin-bottom: 25px;
-}
-
-.registration-form {
-    display: flex;
-    flex-direction: column;
-}
-
-.form-group {
-    position: relative;
-    margin-bottom: 20px;
-}
-
-.input-bg {
-    
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-}
-
-.form-input {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    background-color: #A1C2BD;
-    position: relative;
-    z-index: 1;
-    transition: var(--transition);
-    font-size: 14px;
-}
-
-.form-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(43, 43, 43, 0.2);
-}
-
-.form-input::placeholder {
-    color: #ffffff 50%;
-}
-
 /* ===== SUBMIT AREA ===== */
 .submit-area {
     position: relative;
@@ -467,4 +269,70 @@ header {
 
 .signin-link:hover {
     color: var(--primary-color);
+}
+
+/* ===== RESPONSIVE ===== */
+
+/* Tablet */
+@media screen and (max-width: 1024px) {
+    header {
+        padding: 20px 40px;
+    }
+    .hero {
+        flex-direction: column;
+        padding: 40px 40px;
+        gap: 20px;
+    }
+    .hero .image img {
+        width: 300px;
+    }
+    .buttons button {
+        padding: 6px 16px;
+        font-size: 14px;
+    }
+    .welcome-title { font-size: 28px; }
+    .welcome-subtitle { font-size: 18px; }
+}
+
+/* Tablet kecil / mobile landscape */
+@media screen and (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px 20px;
+    }
+    .buttons {
+        margin-top: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .hero {
+        padding: 30px 20px;
+        text-align: center;
+    }
+    .hero .text {
+        align-items: center;
+        max-width: 100%;
+    }
+    .hero h2 { font-size: 26px; }
+    .hero h3 { font-size: 18px; }
+    .hero p { font-size: 13px; }
+    .hero .image img { width: 250px; }
+    .registration-form { padding: 0 10px; }
+}
+
+/* Mobile portrait */
+@media screen and (max-width: 480px) {
+    header { padding: 10px 15px; }
+    .hero { padding: 20px 15px; gap: 15px; }
+    .hero h2 { font-size: 22px; }
+    .hero h3 { font-size: 16px; }
+    .hero p { font-size: 12px; }
+    .hero .image img { width: 200px; }
+    .buttons button { padding: 5px 12px; font-size: 12px; }
+    .submit-btn { padding: 10px 20px; }
+    .form-input { padding: 10px 12px; font-size: 13px; }
+    .welcome-title { font-size: 24px; }
+    .welcome-subtitle { font-size: 16px; }
 }

@@ -127,8 +127,5 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </form>
         </div>
 
-        <!-- gambar sekarang di kanan -->
-        <img src="assets/image/image2.png" alt="A badminton player celebrating a point" class="player-image">
-    </div>
 </body>
 </html>

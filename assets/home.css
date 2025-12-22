@@ -541,3 +541,24 @@ body {
     color: white;
     padding: 10;
 }
+
+@media (max-width: 1024px) {
+    .hero-content {
+        grid-template-columns: 1fr 1fr;
+        padding: 40px 30px;
+        gap: 25px;
+    }
+}
+@media (max-width: 768px) {
+    .hero-content {
+        grid-template-columns: 1fr;
+        padding: 30px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-content {
+        padding: 20px 15px;
+        gap: 15px;
+    }
+}
