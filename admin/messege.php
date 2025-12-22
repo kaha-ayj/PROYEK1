@@ -57,7 +57,7 @@ body {
 
 .sidebar-header p {
     font-size: 13px;
-    opacity: 0.9;
+        opacity: 0.9;
     margin-top: 5px;
 }
 
@@ -69,14 +69,41 @@ body {
 #userList {
     padding: 10px;
 }
-
 .user-item {
-    padding: 15px;
-    border-radius: 10px;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f9fafb;
     cursor: pointer;
-    margin-bottom: 8px;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    /* Memastikan teks rata kiri */
+    text-align: left; 
+}
+
+.user-item .user-meta {
+    display: flex;
+    justify-content: space-between; /* Nama di kiri, jam di kanan */
+    align-items: center;
+    width: 100%;
+}
+
+.user-item b {
+    color: #1f2937;
+    font-size: 14px;
+    /* Menghapus margin auto jika ada agar tidak ke tengah */
+    margin: 0; 
+}
+
+.user-item small {
+    color: #6b7280;
+    font-size: 13px;
+    display: block;
+    /* Menghapus margin auto agar tetap di kiri */
+    margin: 0; 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .user-item:hover {

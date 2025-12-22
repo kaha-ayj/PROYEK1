@@ -1,36 +1,25 @@
 <?php
+// Mencegah session hilang saat browser ditutup & memperpanjang umur session
+ini_set('session.gc_maxlifetime', 86400); // 24 jam
+session_set_cookie_params(86400);
+
 session_start();
 
-// Sesuaikan path ini dengan folder kamu
+// Koneksi
 include('config/koneksi.php');
 
-// 1. Ambil User ID secara fleksibel
-$user_id = 0; 
-if (isset($_SESSION['penggunaID'])) {
-    $user_id = $_SESSION['penggunaID'];
-} elseif (isset($_SESSION['user']['id'])) {
-    $user_id = $_SESSION['user']['id'];
-} elseif (isset($_SESSION['user_id'])) {
-    $user_id = $_SESSION['user_id'];
-}
+// AMBIL ID SECARA STABIL (Jangan di-reset ke 0)
+// Mengambil dari session 'user' (admin) atau session langsung (user biasa)
+$user_id = $_SESSION['user']['penggunaID'] ?? $_SESSION['penggunaID'] ?? 0;
 
-// HAPUS BARIS INI DI KODE LAMA KAMU: $user_id = 0; <--- Ini yang bikin reset terus
-
-// 2. Jika tetap 0, arahkan ke login (Opsional tapi disarankan)
+// Proteksi: Jika tidak ada session, lempar ke login
 if ($user_id == 0) {
-    // header("Location: login.php"); 
-    // exit;
+    header("Location: login.php"); 
+    exit;
 }
 
-// 3. Ambil username secara fleksibel
-$username = "User";
-if (isset($_SESSION['nama'])) {
-    $username = $_SESSION['nama'];
-} elseif (isset($_SESSION['user']['nama'])) {
-    $username = $_SESSION['user']['nama'];
-} elseif (isset($_SESSION['username'])) {
-    $username = $_SESSION['username'];
-}
+// Ambil Nama
+$username = $_SESSION['user']['nama'] ?? $_SESSION['nama'] ?? "User";
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -724,212 +713,157 @@ if (isset($_SESSION['nama'])) {
     const USER_NAME = "<?php echo addslashes($username); ?>";
     const ADMIN_NAME = "Reinayla";
     
+    // ===== Jika admin, TARGET_USER_ID harus ditentukan (misal dari sidebar list user)
+    const TARGET_USER_ID = <?php echo $user_id; ?>; // user biasa = USER_ID, admin ganti sesuai user yg dipilih
+    
     // =========== VARIABEL ===========
     let messages = [];
-    let isTyping = false;
-    let lastMessageTime = null; // Track pesan terakhir
-    
+    let lastMessageTime = null;
+
     // =========== ELEMEN DOM ===========
     const messagesContainer = document.getElementById('messagesContainer');
     const messageInput = document.getElementById('messageInput');
     const sendButton = document.getElementById('sendButton');
-    const typingIndicator = document.getElementById('typingIndicator');
-    
+
     // =========== LOAD PESAN SEBELUMNYA ===========
-  // Ganti fungsi loadPreviousMessages dengan ini
-async function loadPreviousMessages() {
-    try {
-        const response = await fetch('admin/api/get_user_messages.php');
-        const text = await response.text(); // Ambil teks mentah dulu untuk dicek
-        
-        // Jika respon kosong, jangan di-parse
-        if (!text.trim()) return;
+    async function loadPreviousMessages() {
+        if (!TARGET_USER_ID) return;
+        try {
+            const res = await fetch(`admin/api/get_user_messages.php?user_id=${TARGET_USER_ID}`);
+            const data = await res.json();
 
-        const data = JSON.parse(text); 
-
-        if (data.success && data.messages.length > 0) {
-            messagesContainer.innerHTML = ''; 
-            messages = []; // Reset array lokal
-            
-            data.messages.forEach(msg => {
-                addMessage({
+            if (data.success && data.messages.length > 0) {
+                messagesContainer.innerHTML = '';
+                messages = data.messages; // simpan array pesan
+                data.messages.forEach(msg => addMessage({
                     sender: msg.sender,
                     text: msg.message,
                     time: msg.time || msg.created_at
-                }, false);
-            });
-            
-            // Set waktu pesan terakhir untuk fetchNewMessages
-            const lastMsg = data.messages[data.messages.length - 1];
-            lastMessageTime = lastMsg.created_at || lastMsg.time;
-            
-            scrollToBottom();
-        }
-    } catch (err) {
-        console.warn('Sinyal lemah atau format data salah:', err);
-    }
-}
+                }, false));
+                
+                // update lastMessageTime
+                const lastMsg = data.messages[data.messages.length - 1];
+                lastMessageTime = lastMsg.created_at || lastMsg.time;
 
-// Tambahkan pengecekan yang sama pada fetchNewMessages
-async function fetchNewMessages() {
-    try {
-        const response = await fetch('admin/api/get_user_messages.php');
-        const text = await response.text();
-        if (!text.trim()) return;
-
-        const data = JSON.parse(text);
-        
-        if (data.success && data.messages && data.messages.length > 0) {
-            // Ambil pesan terakhir dari server
-            const latestServerMessage = data.messages[data.messages.length - 1];
-            const latestServerTime = latestServerMessage.created_at || latestServerMessage.time;
-            
-            // Cek apakah ada pesan baru (bandingkan waktu pesan terakhir di layar vs di server)
-            if (lastMessageTime === null) {
-                lastMessageTime = latestServerTime;
-            } else if (latestServerTime > lastMessageTime) {
-                // Jika ada pesan baru, render hanya pesan yang waktunya lebih baru dari lastMessageTime
-                data.messages.forEach(msg => {
-                    const msgTime = msg.created_at || msg.time;
-                    if (msgTime > lastMessageTime) {
-                        // Tampilkan hanya jika pengirim BUKAN user (alias Admin/Bot)
-                        // Karena pesan user sudah di-handle oleh loadPreviousMessages() saat sendMessage
-                        if (msg.sender !== 'user') {
-                            addMessage({
-                                sender: msg.sender,
-                                text: msg.message,
-                                time: msg.time || msgTime
-                            });
-                        }
-                    }
-                });
-                lastMessageTime = latestServerTime;
+                scrollToBottom();
             }
-        }
-    } catch (err) {
-        // Biarkan kosong agar tidak mengganggu log
+        } catch(err) { console.error(err); }
     }
-}
-    
-// =========== KIRIM PESAN ===========
-async function sendMessage() {
-    const text = messageInput.value.trim();
-    if (!text) return;
 
-    messageInput.disabled = true;
-    sendButton.disabled = true;
-    sendButton.innerHTML = '⏳';
-
-    try {
-        const formData = new FormData();
-        formData.append('message', text);
-
-        const response = await fetch('admin/api/send_messages.php', {
-            method: 'POST',
-            body: formData
-        });
-
-        const rawResponse = await response.text();
-        
+    // =========== FETCH PESAN BARU ===========
+    async function fetchNewMessages() {
+        if (!TARGET_USER_ID) return;
         try {
-            const data = JSON.parse(rawResponse);
+            const res = await fetch(`admin/api/get_user_messages.php?user_id=${TARGET_USER_ID}`);
+            const data = await res.json();
+
+            if (data.success && data.messages.length > 0) {
+                const newMessages = data.messages.filter(msg => {
+                    const msgTime = msg.created_at || msg.time;
+                    return lastMessageTime === null || msgTime > lastMessageTime;
+                });
+
+                newMessages.forEach(msg => {
+                    addMessage({
+                        sender: msg.sender,
+                        text: msg.message,
+                        time: msg.time || msg.created_at
+                    });
+                });
+
+                const lastMsg = data.messages[data.messages.length - 1];
+                lastMessageTime = lastMsg.created_at || lastMsg.time;
+            }
+        } catch(err) { console.error(err); }
+    }
+
+    // =========== KIRIM PESAN ===========
+    async function sendMessage() {
+        const text = messageInput.value.trim();
+        if (!text || !TARGET_USER_ID) return;
+
+        messageInput.disabled = sendButton.disabled = true;
+        sendButton.innerHTML = '⏳';
+
+        try {
+            const formData = new FormData();
+            formData.append('message', text);
+            formData.append('user_id', TARGET_USER_ID);
+
+            const res = await fetch('admin/api/send_messages.php', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+
             if (data.success) {
                 messageInput.value = '';
-                
-                // --- INI KUNCINYA ---
-                // Langsung panggil fungsi load agar pesan muncul di layar tanpa refresh
-                await loadPreviousMessages(); 
-                
+                await loadPreviousMessages(); // update tampilan
             } else {
-                alert("Gagal: " + data.error);
+                alert("Gagal: " + (data.error || "Unknown error"));
             }
-        } catch (jsonErr) {
-            console.error("Server tidak mengirim JSON:", rawResponse);
-            alert("Terjadi kesalahan teknis pada server.");
-        }
 
-    } catch (error) {
-        console.error('❌ Error:', error);
-    } finally {
-        messageInput.disabled = false;
-        sendButton.disabled = false;
-        sendButton.innerHTML = '➤';
-        messageInput.focus();
+        } catch(err) {
+            console.error(err);
+        } finally {
+            messageInput.disabled = sendButton.disabled = false;
+            sendButton.innerHTML = '➤';
+            messageInput.focus();
+        }
     }
-}
+
     // =========== TAMBAH PESAN KE TAMPILAN ===========
-   function addMessage(msg, shouldScroll = true) {
-    // Hapus welcome box jika ada
-    const welcomeBox = messagesContainer.querySelector('.welcome-box');
-    if (welcomeBox) welcomeBox.remove();
-    
-    // Buat elemen pesan baru
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `message ${msg.sender}`;
-    
-    // Tentukan Avatar
-    const avatarText = msg.sender === 'user' ? 
-        (USER_NAME ? USER_NAME.charAt(0).toUpperCase() : 'U') : 
-        (msg.sender === 'bot' ? 'B' : 'R');
-    
-    // Tentukan Nama Pengirim
-    const senderName = msg.sender === 'user' ? 'Anda' :
-                      msg.sender === 'bot' ? 'Bot' : ADMIN_NAME;
-    
-    const escapedText = escapeHtml(msg.text).replace(/\n/g,'<br>');
-    
-    messageDiv.innerHTML = `
-        <div class="avatar ${msg.sender}">${avatarText}</div>
-        <div class="message-content">
-            <div class="bubble">${escapedText}</div>
-            <div class="time">${msg.time} • ${senderName}</div>
-        </div>
-    `;
-    
-    messagesContainer.appendChild(messageDiv);
-    
-    if (shouldScroll) {
-        scrollToBottom();
+    function addMessage(msg, shouldScroll=true) {
+        const welcomeBox = messagesContainer.querySelector('.welcome-box');
+        if (welcomeBox) welcomeBox.remove();
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${msg.sender}`;
+
+        const avatarText = msg.sender === 'user' 
+            ? (USER_NAME.charAt(0).toUpperCase()) 
+            : (msg.sender === 'bot' ? 'B' : 'R');
+
+        const senderName = msg.sender === 'user' ? 'Anda'
+                          : msg.sender === 'bot' ? 'Bot'
+                          : ADMIN_NAME;
+
+        const escapedText = escapeHtml(msg.text).replace(/\n/g,'<br>');
+
+        messageDiv.innerHTML = `
+            <div class="avatar ${msg.sender}">${avatarText}</div>
+            <div class="message-content">
+                <div class="bubble">${escapedText}</div>
+                <div class="time">${msg.time} • ${senderName}</div>
+            </div>
+        `;
+        messagesContainer.appendChild(messageDiv);
+
+        if (shouldScroll) scrollToBottom();
     }
-}
-    // =========== FUNGSI BANTUAN ===========
+
     function scrollToBottom() {
-        setTimeout(() => {
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }, 100);
+        setTimeout(() => messagesContainer.scrollTop = messagesContainer.scrollHeight, 100);
     }
-    
-    function getCurrentTime() {
-        const now = new Date();
-        return now.getHours().toString().padStart(2, '0') + ':' + 
-               now.getMinutes().toString().padStart(2, '0');
-    }
-    
+
     function escapeHtml(text) {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
     }
-    
+
     // =========== EVENT LISTENERS ===========
-    messageInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
+    messageInput.addEventListener('keypress', e=>{
+        if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); }
     });
-    
-    // =========== INISIALISASI ===========
-    document.addEventListener('DOMContentLoaded', function() {
+
+    document.addEventListener('DOMContentLoaded', () => {
         messageInput.focus();
-        console.log('💬 Chat system ready! User:', USER_NAME, 'ID:', USER_ID);
-        
-        // Load pesan sebelumnya
         loadPreviousMessages();
-        
-        // Mulai auto-refresh setiap 3 detik
         setInterval(fetchNewMessages, 3000);
+        console.log('💬 Chat system ready! User:', USER_NAME, 'ID:', USER_ID);
     });
 </script>
+
 </body>
 </html>

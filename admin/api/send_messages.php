@@ -1,19 +1,20 @@
 <?php
 session_start();
 header('Content-Type: application/json');
-error_reporting(0); // Mencegah error teks merusak format JSON
+error_reporting(0);
 
 include(__DIR__ . '/../../config/koneksi.php');
 $db = $koneksi ?? $conn;
 
-// 1. Pastikan koneksi aman
 if (!$db) {
     echo json_encode(['success' => false, 'error' => 'Koneksi database gagal']);
     exit;
 }
 
-// 2. Ambil User ID dan Pesan
-$user_id = (int)($_SESSION['penggunaID'] ?? ($_SESSION['user']['penggunaID'] ?? 0));
+// Tentukan user_id DULU sebelum insert
+$admin_mode = isset($_SESSION['user']['role']) && $_SESSION['user']['role'] === 'admin';
+$user_id = $admin_mode ? (int)($_GET['user_id'] ?? 0) : (int)($_SESSION['penggunaID'] ?? 0);
+
 $message = $_POST['message'] ?? '';
 
 if ($user_id === 0) {
@@ -26,12 +27,12 @@ if (empty(trim($message))) {
     exit;
 }
 
-// 3. Bypass Foreign Key (PENTING: Agar database tidak menolak input jika ID dianggap tidak cocok)
+// Bypass FK
 $db->query("SET FOREIGN_KEY_CHECKS=0");
 
 $response = ['success' => false];
 
-// 4. Simpan pesan user
+// Simpan pesan user/admin
 $query = "INSERT INTO chat (penggunaID, sender, message, created_at) VALUES (?, 'user', ?, NOW())";
 $stmt = $db->prepare($query);
 $stmt->bind_param("is", $user_id, $message);
@@ -39,7 +40,7 @@ $stmt->bind_param("is", $user_id, $message);
 if ($stmt->execute()) {
     $response['success'] = true;
 
-    // 5. Cek bot (Agar bot tidak spam, kirim hanya jika ini pesan pertama)
+    // Bot otomatis
     $cek = $db->prepare("SELECT COUNT(*) as total FROM chat WHERE penggunaID = ? AND sender = 'bot'");
     $cek->bind_param("i", $user_id);
     $cek->execute();
@@ -60,7 +61,6 @@ if ($stmt->execute()) {
     $response['error'] = "Database Error: " . $db->error;
 }
 
-// Aktifkan kembali pengecekan relasi
 $db->query("SET FOREIGN_KEY_CHECKS=1");
 
 echo json_encode($response);

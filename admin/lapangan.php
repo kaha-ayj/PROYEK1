@@ -1,22 +1,18 @@
 <?php
 session_start();
-// Path koneksi sudah diperbaiki
 /** @var mysqli $conn */
 require_once $_SERVER['DOCUMENT_ROOT'] . "/PROYEK1/config/koneksi.php";
 
-// --- PERBAIKAN: GUNAKAN JOIN UNTUK MENGAMBIL NAMA VENUE ---
+// Ambil semua lapangan beserta nama venue
 $query = "SELECT 
             l.lapanganID, 
             l.namaLapangan, 
             l.jenis, 
             l.hargaPerJam, 
-            v.namaVenue  /* MENGAMBIL NAMA VENUE DARI TABEL V */
-          FROM 
-            lapangan l
-          JOIN 
-            venue v ON l.venueID = v.venueID /* JOIN DENGAN TABEL VENUE */
-          ORDER BY 
-            v.namaVenue ASC, l.namaLapangan ASC";
+            v.namaVenue
+          FROM lapangan l
+          JOIN venue v ON l.venueID = v.venueID
+          ORDER BY v.namaVenue ASC, l.namaLapangan ASC";
 
 $result = mysqli_query($conn, $query);
 ?>
@@ -30,8 +26,8 @@ $result = mysqli_query($conn, $query);
     <title>Kelola Lapangan - Lapangin.Aja</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
+</head>
+ <style>
         /* ... CSS Anda (sama seperti sebelumnya) ... */
         :root {
             --bg-light: #F0F4F8;
@@ -201,8 +197,6 @@ $result = mysqli_query($conn, $query);
             color: #C0392B;
         }
     </style>
-</head>
-
 <body>
     <aside class="sidebar">
         <div class="logo">Lapangin.Aja</div>
@@ -237,39 +231,40 @@ $result = mysqli_query($conn, $query);
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Venue</th> <th>Nama Lapangan</th> <th>Jenis</th>
+                        <th>No</th>
+                        <th>Venue</th>
+                        <th>Nama Lapangan</th>
+                        <th>Jenis</th>
                         <th>Harga per Jam</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                    // Hitung jumlah kolom di header (6 kolom: ID, Venue, Nama Lapangan, Jenis, Harga, Action)
-                    $colspan = 6; 
-                    
+                    $colspan = 6;
                     if (mysqli_num_rows($result) == 0):
                         echo "<tr><td colspan='{$colspan}' style='text-align:center;'>Belum ada data lapangan.</td></tr>";
                     else:
+                        $no = 1;
                         while ($row = mysqli_fetch_assoc($result)):
                             $harga = "Rp. " . number_format($row['hargaPerJam'], 0, ',', '.');
-                            ?>
+                    ?>
                             <tr>
-                                <td><strong><?php echo htmlspecialchars($row['lapanganID']); ?></strong></td>
-                                <td><?php echo htmlspecialchars($row['namaVenue']); ?></td> <td><?php echo htmlspecialchars($row['namaLapangan']); ?></td>
+                                <td><?php echo $no++; ?></td>
+                                <td><?php echo htmlspecialchars($row['namaVenue']); ?></td>
+                                <td><?php echo htmlspecialchars($row['namaLapangan']); ?></td>
                                 <td><?php echo htmlspecialchars($row['jenis']); ?></td>
                                 <td><?php echo $harga; ?></td>
                                 <td>
                                     <a href="edit_lapangan.php?id=<?php echo $row['lapanganID']; ?>" class="action-btn edit" title="Edit Lapangan">
                                         <i class="fa-solid fa-pen-to-square"></i>
                                     </a>
-                                    <a href="hapus_lapangan.php?id=<?php echo $row['lapanganID']; ?>" class="action-btn delete" title="Hapus Lapangan"
-                                        onclick="return confirm('Yakin hapus lapangan ini?');">
+                                    <a href="hapus_lapangan.php?id=<?php echo $row['lapanganID']; ?>" class="action-btn delete" title="Hapus Lapangan" onclick="return confirm('Yakin hapus lapangan ini?');">
                                         <i class="fa-solid fa-trash"></i>
                                     </a>
                                 </td>
                             </tr>
-                            <?php
+                    <?php
                         endwhile;
                     endif;
                     ?>
@@ -280,6 +275,7 @@ $result = mysqli_query($conn, $query);
 </body>
 
 </html>
+
 <?php
 mysqli_close($conn);
 ?>

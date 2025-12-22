@@ -1,6 +1,18 @@
 <?php
+// PERPANJANG UMUR SESSION 24 JAM
+ini_set('session.gc_maxlifetime', 86400); // 24 jam
+session_set_cookie_params([
+    'lifetime' => 86400,   // 24 jam
+    'path' => '/',
+    'domain' => '',
+    'secure' => isset($_SERVER['HTTPS']),
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
+
 session_start();
-include"config/koneksi.php";
+
+include "config/koneksi.php";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
@@ -8,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $password = $_POST['password'];
 
     $stmt = $conn->prepare(
-        "SELECT penggunaID, nama, email, password, role 
+        "SELECT penggunaID, nama, email, password, role, foto 
          FROM pengguna WHERE email = ?"
     );
     $stmt->bind_param("s", $email);
@@ -27,16 +39,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 
-  $_SESSION['user'] = [
-    'penggunaID' => $user['penggunaID'],
-    'nama'       => $user['nama'],
-    'email'      => $user['email'],
-    'foto'       => $user['foto'] ?? 'default.png',
-    'role'       => $user['role']
-];
+    // SIMPAN SESSION STABIL
+    $_SESSION['user'] = [
+        'penggunaID' => $user['penggunaID'],
+        'nama'       => $user['nama'],
+        'email'      => $user['email'],
+        'foto'       => $user['foto'] ?? 'default.png',
+        'role'       => $user['role']
+    ];
+    $_SESSION['penggunaID'] = $user['penggunaID']; // opsional, kalau halaman lain pakai
 
-
-
+    // Redirect sesuai role
     if ($user['role'] === 'admin') {
         header("Location: admin/dashboard.php");
     } else {
@@ -45,6 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     exit;
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="id">

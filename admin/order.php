@@ -13,11 +13,14 @@ $sql = "SELECT
             j.waktuMulai,
             j.waktuSelesai,
             l.namaLapangan,
-            l.hargaPerJam
+            l.hargaPerJam,
+            v.namaVenue
         FROM pemesanan p
         JOIN jadwal j ON p.jadwalID = j.jadwalID
         JOIN lapangan l ON j.lapanganID = l.lapanganID
+        JOIN venue v ON l.venueID = v.venueID
         WHERE DATE(j.waktuMulai) BETWEEN ? AND ?";
+
 
 $types = "ss";
 $params = [$tgl_mulai, $tgl_selesai];
@@ -319,6 +322,7 @@ function formatStatus($status_db)
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Venue</th>
                         <th>Nama Lapangan</th>
                         <th>Tanggal & Jam</th>
                         <th>Jumlah</th>
@@ -339,6 +343,7 @@ function formatStatus($status_db)
                             ?>
                             <tr>
                                 <td><strong>#<?php echo $row['pemesananID']; ?></strong></td>
+                                <td><?php echo htmlspecialchars($row['namaVenue']); ?></td>
                                 <td><?php echo htmlspecialchars($row['namaLapangan']); ?></td>
                                 <td><?php echo $jam; ?></td>
                                 <td>1</td>
