@@ -1,6 +1,7 @@
 <?php
 session_start();
-require_once '../config/koneksi.php';
+/** @var mysqli $conn */
+require_once $_SERVER['DOCUMENT_ROOT'] . "/PROYEK1/config/koneksi.php";
 
 $jadwalID = $_GET['id'] ?? null;
 if (!$jadwalID) {

@@ -736,14 +736,20 @@ if (isset($_SESSION['nama'])) {
     const typingIndicator = document.getElementById('typingIndicator');
     
     // =========== LOAD PESAN SEBELUMNYA ===========
-  async function loadPreviousMessages() {
+  // Ganti fungsi loadPreviousMessages dengan ini
+async function loadPreviousMessages() {
     try {
         const response = await fetch('admin/api/get_user_messages.php');
-        const data = await response.json(); // Pastikan di-parse sebagai JSON
+        const text = await response.text(); // Ambil teks mentah dulu untuk dicek
+        
+        // Jika respon kosong, jangan di-parse
+        if (!text.trim()) return;
+
+        const data = JSON.parse(text); 
 
         if (data.success && data.messages.length > 0) {
-            // Hapus isi container agar tidak double jika fungsi dipanggil ulang
             messagesContainer.innerHTML = ''; 
+            messages = []; // Reset array lokal
             
             data.messages.forEach(msg => {
                 addMessage({
@@ -752,123 +758,98 @@ if (isset($_SESSION['nama'])) {
                     time: msg.time || msg.created_at
                 }, false);
             });
+            
+            // Set waktu pesan terakhir untuk fetchNewMessages
+            const lastMsg = data.messages[data.messages.length - 1];
+            lastMessageTime = lastMsg.created_at || lastMsg.time;
+            
             scrollToBottom();
         }
     } catch (err) {
-        console.error('Gagal memuat pesan lama:', err);
+        console.warn('Sinyal lemah atau format data salah:', err);
     }
 }
-    // =========== AUTO REFRESH PESAN BARU ===========
-    async function fetchNewMessages() {
-        try {
-            const response = await fetch('admin/api/get_user_messages.php');
-            const data = await response.json();
+
+// Tambahkan pengecekan yang sama pada fetchNewMessages
+async function fetchNewMessages() {
+    try {
+        const response = await fetch('admin/api/get_user_messages.php');
+        const text = await response.text();
+        if (!text.trim()) return;
+
+        const data = JSON.parse(text);
+        
+        if (data.success && data.messages && data.messages.length > 0) {
+            // Ambil pesan terakhir dari server
+            const latestServerMessage = data.messages[data.messages.length - 1];
+            const latestServerTime = latestServerMessage.created_at || latestServerMessage.time;
             
-            if (data.success && data.messages && data.messages.length > 0) {
-                // Ambil pesan terakhir dari server
-                const latestServerMessage = data.messages[data.messages.length - 1];
-                const latestServerTime = latestServerMessage.created_at || latestServerMessage.time;
-                
-                // Cek apakah ada pesan baru
-                if (lastMessageTime === null) {
-                    // Pertama kali load, set lastMessageTime
-                    lastMessageTime = latestServerTime;
-                } else if (latestServerTime > lastMessageTime) {
-                    // Ada pesan baru!
-                    data.messages.forEach(msg => {
-                        const msgTime = msg.created_at || msg.time;
-                        if (msgTime > lastMessageTime) {
-                            // Pesan baru dari admin/bot
-                            if (msg.sender !== 'user') {
-                                addMessage({
-                                    sender: msg.sender,
-                                    text: msg.message,
-                                    time: msg.time || getCurrentTime()
-                                });
-                            }
+            // Cek apakah ada pesan baru (bandingkan waktu pesan terakhir di layar vs di server)
+            if (lastMessageTime === null) {
+                lastMessageTime = latestServerTime;
+            } else if (latestServerTime > lastMessageTime) {
+                // Jika ada pesan baru, render hanya pesan yang waktunya lebih baru dari lastMessageTime
+                data.messages.forEach(msg => {
+                    const msgTime = msg.created_at || msg.time;
+                    if (msgTime > lastMessageTime) {
+                        // Tampilkan hanya jika pengirim BUKAN user (alias Admin/Bot)
+                        // Karena pesan user sudah di-handle oleh loadPreviousMessages() saat sendMessage
+                        if (msg.sender !== 'user') {
+                            addMessage({
+                                sender: msg.sender,
+                                text: msg.message,
+                                time: msg.time || msgTime
+                            });
                         }
-                    });
-                    lastMessageTime = latestServerTime;
-                }
+                    }
+                });
+                lastMessageTime = latestServerTime;
             }
-        } catch (err) {
-            console.error('Error fetching new messages:', err);
         }
+    } catch (err) {
+        // Biarkan kosong agar tidak mengganggu log
     }
+}
     
 // =========== KIRIM PESAN ===========
 async function sendMessage() {
     const text = messageInput.value.trim();
-    if (!text) {
-        messageInput.focus();
-        return;
-    }
-    
+    if (!text) return;
+
     messageInput.disabled = true;
     sendButton.disabled = true;
     sendButton.innerHTML = '⏳';
-    
-    // 1. Tampilkan pesan user di layar
-    addMessage({
-        sender: 'user',
-        text: text,
-        time: getCurrentTime()
-    });
-    
-    messageInput.value = '';
-    
+
     try {
         const formData = new FormData();
         formData.append('message', text);
-        
+
         const response = await fetch('admin/api/send_messages.php', {
             method: 'POST',
             body: formData
         });
-        
-        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            // ✅ 2. Jika ada balasan Bot dari API
-            if (data.reply) {
-                // Beri jeda sedikit seolah bot sedang mengetik
-                typingIndicator.style.display = 'flex';
-                
-                setTimeout(async () => {
-                    typingIndicator.style.display = 'none';
-                    
-                    // Tampilkan balasan bot di layar
-                    const botMsg = {
-                        sender: 'bot',
-                        text: data.reply.message,
-                        time: data.reply.time || getCurrentTime()
-                    };
-                    addMessage(botMsg);
 
-                    // ✅ 3. SIMPAN BALASAN BOT KE DATABASE
-                    // Kita kirim lagi ke server dengan sender 'bot'
-                    const botData = new FormData();
-                    botData.append('message', botMsg.text);
-                    botData.append('sender', 'bot'); 
-                    await fetch('admin/api/send_messages.php', {
-                        method: 'POST',
-                        body: botData
-                    });
-                }, 1000);
-            }
-        } else {
-            throw new Error(data.message || 'Gagal menyimpan pesan');
-        }
+        const rawResponse = await response.text();
         
+        try {
+            const data = JSON.parse(rawResponse);
+            if (data.success) {
+                messageInput.value = '';
+                
+                // --- INI KUNCINYA ---
+                // Langsung panggil fungsi load agar pesan muncul di layar tanpa refresh
+                await loadPreviousMessages(); 
+                
+            } else {
+                alert("Gagal: " + data.error);
+            }
+        } catch (jsonErr) {
+            console.error("Server tidak mengirim JSON:", rawResponse);
+            alert("Terjadi kesalahan teknis pada server.");
+        }
+
     } catch (error) {
         console.error('❌ Error:', error);
-        addMessage({
-            sender: 'bot',
-            text: '⚠️ Maaf, terjadi gangguan koneksi.',
-            time: getCurrentTime()
-        });
     } finally {
         messageInput.disabled = false;
         sendButton.disabled = false;
@@ -877,57 +858,40 @@ async function sendMessage() {
     }
 }
     // =========== TAMBAH PESAN KE TAMPILAN ===========
-    function addMessage(msg, shouldScroll = true) {
-        // Hapus welcome message jika ada
-        const welcomeBox = messagesContainer.querySelector('.welcome-box');
-        if (welcomeBox && msg.sender === 'user') {
-            welcomeBox.remove();
-        }
-        
-        // Cek duplikat berdasarkan waktu + text + sender
-        const isDuplicate = messages.some(m => 
-            m.time === msg.time && 
-            m.text === msg.text && 
-            m.sender === msg.sender
-        );
-        
-        if (isDuplicate) {
-            console.log('Duplicate message detected, skipping...');
-            return;
-        }
-        
-        // Buat elemen pesan
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${msg.sender}`;
-        
-        const avatarText = msg.sender === 'user' ? 
-            (USER_NAME ? USER_NAME.charAt(0).toUpperCase() : 'U') : 
-            (msg.sender === 'bot' ? 'B' : 'R');
-        
-        const senderName = msg.sender === 'user' ? USER_NAME :
-                          msg.sender === 'bot' ? 'Bot' : ADMIN_NAME;
-        
-        // Escape HTML
-        const escapedText = escapeHtml(msg.text).replace(/\n/g,'<br>');
-        
-        messageDiv.innerHTML = `
-            <div class="avatar ${msg.sender}">${avatarText}</div>
-            <div class="message-content">
-                <div class="bubble">${escapedText}</div>
-                <div class="time">${msg.time} • ${senderName}</div>
-            </div>
-        `;
-        
-        messagesContainer.appendChild(messageDiv);
-        
-        if (shouldScroll) {
-            scrollToBottom();
-        }
-        
-        // Simpan ke array messages
-        messages.push(msg);
-    }
+   function addMessage(msg, shouldScroll = true) {
+    // Hapus welcome box jika ada
+    const welcomeBox = messagesContainer.querySelector('.welcome-box');
+    if (welcomeBox) welcomeBox.remove();
     
+    // Buat elemen pesan baru
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${msg.sender}`;
+    
+    // Tentukan Avatar
+    const avatarText = msg.sender === 'user' ? 
+        (USER_NAME ? USER_NAME.charAt(0).toUpperCase() : 'U') : 
+        (msg.sender === 'bot' ? 'B' : 'R');
+    
+    // Tentukan Nama Pengirim
+    const senderName = msg.sender === 'user' ? 'Anda' :
+                      msg.sender === 'bot' ? 'Bot' : ADMIN_NAME;
+    
+    const escapedText = escapeHtml(msg.text).replace(/\n/g,'<br>');
+    
+    messageDiv.innerHTML = `
+        <div class="avatar ${msg.sender}">${avatarText}</div>
+        <div class="message-content">
+            <div class="bubble">${escapedText}</div>
+            <div class="time">${msg.time} • ${senderName}</div>
+        </div>
+    `;
+    
+    messagesContainer.appendChild(messageDiv);
+    
+    if (shouldScroll) {
+        scrollToBottom();
+    }
+}
     // =========== FUNGSI BANTUAN ===========
     function scrollToBottom() {
         setTimeout(() => {

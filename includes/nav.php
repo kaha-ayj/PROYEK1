@@ -1,5 +1,22 @@
 <link rel="stylesheet" href="assets/nav.css">
 
+<?php
+// Tentukan folder tempat menyimpan foto profil
+$upload_path = 'assets/profile/';
+$default_profile = 'assets/image/profile.png';
+
+// Ambil foto dari session jika ada, jika tidak pakai default
+$user_photo = $default_profile;
+if (isset($_SESSION['user']['foto']) && !empty($_SESSION['user']['foto'])) {
+    // Pastikan file gambarnya memang ada di folder
+    $file_path = $upload_path . $_SESSION['user']['foto'];
+    if (file_exists($file_path)) {
+        $user_photo = $file_path;
+    }
+}
+?>
+
+<header>
     <div class="container">
         <div class="nav">
             <div class="logo">
@@ -24,9 +41,9 @@
 
                 <?php if (isset($_SESSION['user'])): ?>
                     <div class="user-menu">
-                        <!-- Profil di navbar -->
+                        <!-- Profil di navbar menggunakan variabel $user_photo -->
                         <a href="profile.php" class="btn-profile-img" title="Profil">
-                            <img src="assets/image/profile.png" alt="Profile">
+                            <img src="<?= $user_photo ?>?t=<?= time(); ?>" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
                         </a>
 
                         <!-- Tombol hamburger -->
@@ -39,12 +56,12 @@
                         <!-- Dropdown menu -->
                         <div class="dropdown" id="dropdownMenu">
                             <div class="dropdown-header">
-                                <img src="assets/image/profile.png" alt="Profile" class="dropdown-profile">
+                                <!-- Profil di dropdown juga mengikuti -->
+                                <img src="<?= $user_photo ?>?t=<?= time(); ?>" alt="Profile" class="dropdown-profile" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
                                 <span class="dropdown-username"><?= htmlspecialchars($_SESSION['user']['nama'] ?? 'Pengguna'); ?></span>
                             </div>
                             <hr>
                             <a href="profile.php">Profil</a>
-                            <a href="settings.php">Pengaturan</a>
                             <a href="logout.php" onclick="return confirm('Yakin mau logout?')">Logout</a>
                         </div>
                     </div>
@@ -60,13 +77,17 @@
     const hamburger = document.getElementById('hamburgerMenu');
     const dropdown = document.getElementById('dropdownMenu');
 
-    hamburger.addEventListener('click', () => {
-        dropdown.classList.toggle('show');
-    });
+    if (hamburger) {
+        hamburger.addEventListener('click', () => {
+            dropdown.classList.toggle('show');
+        });
+    }
 
     document.addEventListener('click', (e) => {
-        if (!hamburger.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.remove('show');
+        if (hamburger && dropdown) {
+            if (!hamburger.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.remove('show');
+            }
         }
     });
 </script>

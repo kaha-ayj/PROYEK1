@@ -419,39 +419,49 @@ body {
 </div>
 
 <script>
-const API_GET_USERS = 'api/get_users.php';
-const API_GET_MESSAGES = 'api/get_messages.php';
-const API_SEND_MESSAGE = 'api/send_admin_message.php';
-const API_MARK_READ = 'api/mark_read.php';
+// =========== KONFIGURASI API ===========
+// SESUAIKAN DENGAN NAMA FILE DI GAMBAR VS CODE KAMU
+const API_GET_USERS = '/proyek1/admin/api/get_users.php';     // Pastikan pakai 's'
+const API_GET_MESSAGES = '/proyek1/admin/api/get_messages.php'; 
+const API_SEND_MESSAGE = '/proyek1/admin/api/send_admin_message.php'; // Perbaiki typo 'messsges' jadi 'messages'
+const API_MARK_READ = '/proyek1/admin/api/mark_read.php';
 
 let currentUserId = null;
 let lastMessageCount = 0;
 let autoRefreshInterval = null;
 
-// =========== LOAD USER LIST ===========
+// =========== 1. LOAD DAFTAR USER (SIDEBAR) ===========
 async function loadUserList() {
     const userList = document.getElementById('userList');
     try {
-        const res = await fetch(API_GET_USERS);
-        const json = await res.json();
-        
-        if (!json.success) {
-            throw new Error(json.message || 'Gagal load user');
+        // Tambahkan ?t= + timestamp agar browser tidak ambil dari cache lama
+        const res = await fetch(API_GET_USERS + '?t=' + Date.now());
+        const text = await res.text();
+
+        if (text.trim().startsWith('<')) {
+             console.error("Server Error (HTML):", text);
+             userList.innerHTML = '<div class="loading">❌ File PHP bermasalah / Jalur salah</div>';
+             return;
         }
+
+        const json = JSON.parse(text);
+        // ... sisa kode render ...
+        if (!json.success) throw new Error(json.message || 'Gagal load user');
         
-        if (json.data.length === 0) {
+        if (!json.data || json.data.length === 0) {
             userList.innerHTML = '<div class="loading">Belum ada percakapan</div>';
             return;
         }
         
+        // Render ke HTML
         userList.innerHTML = json.data.map(u => {
-            const initial = u.username ? u.username.charAt(0).toUpperCase() : 'U';
             const lastMsg = u.last_message || 'Belum ada pesan';
-            const lastTime = u.last_time ? new Date(u.last_time).toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'}) : '';
+            const lastTime = u.last_time || '';
+            const activeClass = u.user_id === currentUserId ? 'active' : '';
             
             return `
-            <div class="user-item ${u.user_id === currentUserId ? 'active' : ''}" 
-                 onclick="selectUser(${u.user_id}, '${u.username}', this)">
+            <div class="user-item ${activeClass}" 
+                 onclick="selectUser(${u.user_id}, '${u.username.replace(/'/g, "\\'")}', this)">
                 <b>${u.username} ${lastTime ? `<small style="float:right;font-weight:normal;color:#999">${lastTime}</small>` : ''}</b>
                 <small>${lastMsg}</small>
             </div>`;
@@ -459,171 +469,146 @@ async function loadUserList() {
         
     } catch (err) {
         console.error('Error loading users:', err);
-        userList.innerHTML = '<div class="loading">❌ Gagal memuat percakapan</div>';
+        userList.innerHTML = '<div class="loading">❌ Gagal memuat daftar chat</div>';
+    }
+}
+// =========== 4. KIRIM PESAN (DARI ADMIN) ===========
+async function sendAdminMessage() {
+    const input = document.getElementById('adminMessageInput');
+    const message = input.value.trim();
+    
+    // 1. Validasi: Pastikan user sudah dipilih dan pesan tidak kosong
+    if (!message || !currentUserId) {
+        alert("Pilih user terlebih dahulu dan ketik pesan!");
+        return;
+    }
+
+    try {
+        // 2. Kirim data sebagai JSON agar sesuai dengan php://input di server
+        const response = await fetch(API_SEND_MESSAGE, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                penggunaID: currentUserId, // Menggunakan penggunaID sesuai permintaanmu
+                message: message
+            })
+        });
+
+        const json = await response.json();
+
+        if (json.success) {
+            input.value = ''; // Kosongkan input kotak pesan
+            loadMessages(currentUserId); // Refresh chat box agar pesan muncul
+            loadUserList(); // Update sidebar untuk pesan terakhir
+        } else {
+            alert('Gagal: ' + json.message);
+        }
+    } catch (err) {
+        console.error('Error:', err);
+        alert('Terjadi kesalahan koneksi ke server.');
     }
 }
 
-// =========== SELECT USER ===========
+// =========== 2. PILIH USER (DARI SIDEBAR) ===========
 function selectUser(userId, username, el) {
+    if (!userId) return;
     currentUserId = userId;
     
-    // Update UI
+    // UI Feedback
     document.querySelectorAll('.user-item').forEach(i => i.classList.remove('active'));
     if (el) el.classList.add('active');
     
-    // Show chat area
+    // Tampilkan panel chat
     document.getElementById('emptyChat').style.display = 'none';
     document.getElementById('chatHeader').classList.add('active');
     document.getElementById('chatMessages').classList.add('active');
     document.getElementById('chatInput').classList.add('active');
     
-    // Update header
-    const initial = username ? username.charAt(0).toUpperCase() : 'U';
     document.getElementById('currentUserName').innerText = username;
-    document.getElementById('chatAvatar').innerText = initial;
+    document.getElementById('chatAvatar').innerText = username.charAt(0).toUpperCase();
     
-    // Load messages
+    lastMessageCount = 0; 
     loadMessages(userId);
-    
-    // Mark as read
     markAsRead(userId);
     
-    // Start auto-refresh
+    // Auto refresh chat tiap 3 detik
     if (autoRefreshInterval) clearInterval(autoRefreshInterval);
     autoRefreshInterval = setInterval(() => loadMessages(userId, true), 3000);
 }
 
-// =========== LOAD MESSAGES ===========
+// =========== 3. LOAD PESAN (CHAT BOX) ===========
+// =========== 3. LOAD PESAN (CHAT BOX) ===========
 async function loadMessages(userId, isAutoRefresh = false) {
     const chatBox = document.getElementById('chatMessages');
     
-    // Simpan scroll position sebelumnya
-    const wasAtBottom = chatBox.scrollHeight - chatBox.scrollTop <= chatBox.clientHeight + 50;
+    // Simpan posisi scroll: cek apakah admin sedang di posisi paling bawah
+    const wasAtBottom = chatBox.scrollHeight - chatBox.scrollTop <= chatBox.clientHeight + 100;
     
     try {
+        // Memanggil API dengan parameter penggunaID sesuai file get_messages.php kamu
         const res = await fetch(`${API_GET_MESSAGES}?penggunaID=${userId}`);
         const json = await res.json();
         
-        if (!json.success) {
-            if (!isAutoRefresh) {
-                chatBox.innerHTML = '<div class="empty-chat"><i class="fas fa-exclamation-circle"></i><p>Gagal memuat pesan</p></div>';
-            }
-            return;
-        }
-        
-        if (json.data.length === 0) {
-            chatBox.innerHTML = '<div class="empty-chat"><i class="far fa-comment-dots"></i><p>Belum ada pesan</p></div>';
-            lastMessageCount = 0;
-            return;
-        }
-        
-        // Cek ada pesan baru atau tidak
-        if (isAutoRefresh && json.data.length === lastMessageCount) {
-            return; // Tidak ada pesan baru, skip render
-        }
+        if (!json.success) return;
+
+        // Jika refresh otomatis dan jumlah pesan tidak berubah, tidak perlu render ulang
+        if (isAutoRefresh && json.data.length === lastMessageCount) return;
         
         lastMessageCount = json.data.length;
         
-        // Render messages
+        // Render riwayat percakapan
         chatBox.innerHTML = json.data.map(msg => {
             const side = msg.sender === 'admin' ? 'admin' : 'user';
-            const initial = side === 'admin' ? 'A' : (msg.sender_name ? msg.sender_name.charAt(0).toUpperCase() : 'U');
-            const time = new Date(msg.created_at).toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'});
+            // Avatar 'A' untuk admin, 'U' untuk penyewa
+            const initial = side === 'admin' ? 'A' : 'U';
             
             return `
             <div class="message ${side}">
                 <div class="message-avatar">${initial}</div>
                 <div class="message-content">
                     <div class="message-bubble">${escapeHtml(msg.message)}</div>
-                    <div class="message-time">${time}</div>
+                    <div class="message-time">${msg.time || '--:--'}</div>
                 </div>
             </div>`;
         }).join('');
         
-        // Auto-scroll jika sebelumnya di bawah atau ada pesan baru
+        // Gulir otomatis ke pesan terbaru jika admin tidak sedang scroll ke atas
         if (wasAtBottom || !isAutoRefresh) {
             chatBox.scrollTop = chatBox.scrollHeight;
         }
-        
     } catch (err) {
-        console.error('Error loading messages:', err);
-        if (!isAutoRefresh) {
-            chatBox.innerHTML = '<div class="empty-chat"><i class="fas fa-exclamation-circle"></i><p>Error memuat chat</p></div>';
-        }
+        console.error('Gagal memuat pesan:', err);
     }
 }
 
-// =========== SEND MESSAGE ===========
-async function sendAdminMessage() {
-    const input = document.getElementById('adminMessageInput');
-    const message = input.value.trim();
-    
-    if (!message || !currentUserId) return;
-    
-    // Disable input
-    input.disabled = true;
-    
-    try {
-        const res = await fetch(API_SEND_MESSAGE, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: currentUserId, message })
-        });
-        
-        const json = await res.json();
-        
-        if (!json.success) {
-            alert(json.message || 'Gagal kirim pesan');
-            return;
-        }
-        
-        // Clear input & reload messages
-        input.value = '';
-        loadMessages(currentUserId);
-        loadUserList(); // Refresh user list untuk update last message
-        
-    } catch (err) {
-        console.error('Error sending message:', err);
-        alert('Error kirim pesan');
-    } finally {
-        input.disabled = false;
-        input.focus();
-    }
-}
-
-// =========== MARK AS READ ===========
+// =========== 5. FUNGSI PENDUKUNG ===========
 async function markAsRead(userId) {
     try {
-        const formData = new FormData();
-        formData.append('user_id', userId);
-        
-        await fetch(API_MARK_READ, {
-            method: 'POST',
-            body: formData
-        });
-    } catch (err) {
-        console.error('Error marking as read:', err);
-    }
+        const fd = new FormData();
+        fd.append('user_id', userId);
+        await fetch(API_MARK_READ, { method: 'POST', body: fd });
+    } catch (e) {}
 }
 
-// =========== HELPER FUNCTIONS ===========
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML.replace(/\n/g, '<br>');
 }
 
-// =========== EVENT LISTENERS ===========
-document.getElementById('adminMessageInput').addEventListener('keypress', function(e) {
+// =========== 6. INITIALIZE ===========
+document.getElementById('adminMessageInput').addEventListener('keypress', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         sendAdminMessage();
     }
 });
 
-// =========== INIT ===========
+// Jalankan saat halaman dibuka
 loadUserList();
-setInterval(loadUserList, 30000); // Refresh user list setiap 30 detik
+setInterval(loadUserList, 10000); // Update sidebar tiap 10 detik
 
 console.log('💬 Admin Chat System Ready!');
 </script>

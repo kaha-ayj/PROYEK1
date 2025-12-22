@@ -1,6 +1,7 @@
 <?php
 // PASTIKAN LOKASI KONEKSI SUDAH BENAR
-require_once 'config/koneksi.php';
+/** @var mysqli $conn */
+require_once $_SERVER['DOCUMENT_ROOT'] . "/PROYEK1/config/koneksi.php";
 
 // --- KONFIGURASI JADWAL ---
 $tanggal_target = date('Y-m-d'); // Tanggal hari ini, ubah ke tanggal lain jika perlu (misal: '2025-11-19')

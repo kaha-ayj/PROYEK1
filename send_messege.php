@@ -1,11 +1,11 @@
 <?php
-// send_message.php - VERSI FIX SEMPURNA
+error_reporting(0);
+ini_set('display_errors', 0);
+ob_start();
+
+header('Content-Type: application/json; charset=utf-8');
 session_start();
-
-// Debug
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
+include(__DIR__ . "/../../config/koneksi.php");
 // SET HEADER JSON
 header('Content-Type: application/json');
 
@@ -117,6 +117,8 @@ try {
     $update_stmt->execute();
     $update_stmt->close();
     
+    ob_clean(); // Bersihkan buffer
+echo json_encode($response);
     // Response sukses
     echo json_encode([
         'success' => true,

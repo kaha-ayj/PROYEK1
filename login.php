@@ -27,12 +27,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 
-    $_SESSION['user'] = [
-        'id' => $user['penggunaID'],
-        'nama' => $user['nama'],
-        'email' => $user['email'],
-        'role' => $user['role']
-    ];
+  $_SESSION['user'] = [
+    'penggunaID' => $user['penggunaID'],
+    'nama'       => $user['nama'],
+    'email'      => $user['email'],
+    'foto'       => $user['foto'] ?? 'default.png',
+    'role'       => $user['role']
+];
+
+
 
     if ($user['role'] === 'admin') {
         header("Location: admin/dashboard.php");

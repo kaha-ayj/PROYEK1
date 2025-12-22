@@ -1,25 +1,33 @@
-<?php //admin/api/get_message.php
-session_start();
+<?php
 header('Content-Type: application/json');
-include __DIR__ . '/../../config/koneksi.php';
+require_once __DIR__ . '/../../config/koneksi.php';
 
-if(!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin'){
-    echo json_encode(['success'=>false,'message'=>'Bukan admin']);
+// Tangkap ID yang dikirim dari fetch(`${API_GET_MESSAGES}?penggunaID=${userId}`)
+$id = $_GET['penggunaID'] ?? null;
+
+if (!$id) {
+    echo json_encode(['success' => false, 'message' => 'ID tidak ditemukan']);
     exit;
 }
 
-$penggunaID = isset($_GET['penggunaID']) ? (int)$_GET['penggunaID'] : 0;
+// Ambil semua pesan antara admin dan user ini
+$sql = "SELECT message, sender, created_at 
+        FROM chat 
+        WHERE penggunaID = ? 
+        ORDER BY created_at ASC";
 
-$sql = "SELECT sender, message, created_at FROM chat WHERE penggunaID=? ORDER BY created_at ASC";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param('i', $penggunaID);
+$stmt->bind_param("i", $id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-$data = [];
-while($row = $result->fetch_assoc()){
-    $data[] = $row;
+$messages = [];
+while($row = $result->fetch_assoc()) {
+    $messages[] = [
+        'message' => $row['message'],
+        'sender'  => $row['sender'], // 'user' atau 'admin'
+        'time'    => date('H:i', strtotime($row['created_at']))
+    ];
 }
 
-echo json_encode(['success'=>true,'data'=>$data]);
-$conn->close();
+echo json_encode(['success' => true, 'data' => $messages]);

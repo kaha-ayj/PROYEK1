@@ -1,41 +1,33 @@
-<?php //admin/api/get_user.php
-session_start();
+<?php
 header('Content-Type: application/json');
-
-// Cek session admin
-if(!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin'){
-    echo json_encode(['success'=>false,'message'=>'Bukan admin']);
-    exit;
-}
-
-// Path koneksi
 require_once __DIR__ . '/../../config/koneksi.php';
 
-// Ambil daftar user dengan pesan terakhir
-$sql = "SELECT p.penggunaID, p.nama, c.message AS last_message, c.created_at
+// Query ini mengambil SEMUA user yang bukan admin
+// Kita gunakan LEFT JOIN agar user yang belum pernah chat tetap muncul
+$sql = "SELECT p.penggunaID, p.nama, 
+               (SELECT message FROM chat 
+                WHERE penggunaID = p.penggunaID 
+                ORDER BY created_at DESC LIMIT 1) as last_msg,
+               (SELECT created_at FROM chat 
+                WHERE penggunaID = p.penggunaID 
+                ORDER BY created_at DESC LIMIT 1) as last_time
         FROM pengguna p
-        LEFT JOIN chat c ON c.chat_id = (
-            SELECT chat_id FROM chat 
-            WHERE penggunaID = p.penggunaID
-            ORDER BY created_at DESC LIMIT 1
-        )
-        ORDER BY c.created_at DESC";
+        WHERE p.role != 'admin'
+        ORDER BY last_time DESC"; // User dengan chat terbaru akan tetap di atas
 
 $result = $conn->query($sql);
+$data = [];
 
-$users = [];
-while($row = $result->fetch_assoc()){
-    $users[] = [
-        'user_id' => (int)$row['penggunaID'],
-        'username' => $row['nama'],
-        'last_message' => $row['last_message'] ?? '',
-        'last_time' => $row['created_at'] ?? ''
-    ];
+if ($result) {
+    while($row = $result->fetch_assoc()) {
+        $data[] = [
+            'user_id'      => $row['penggunaID'],
+            'username'     => $row['nama'],
+            // Jika belum ada pesan, berikan keterangan default
+            'last_message' => $row['last_msg'] ?? 'Belum ada percakapan',
+            'last_time'    => $row['last_time'] ? date('H:i', strtotime($row['last_time'])) : ''
+        ];
+    }
 }
 
-echo json_encode([
-    'success' => true,
-    'data' => $users
-]);
-
-$conn->close();
+echo json_encode(['success' => true, 'data' => $data]);

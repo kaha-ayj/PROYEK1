@@ -1,6 +1,7 @@
 <?php
 session_start();
-include 'config/koneksi.php';
+/** @var mysqli $conn */
+require_once $_SERVER['DOCUMENT_ROOT'] . "/PROYEK1/config/koneksi.php";
 
 $data = json_decode(file_get_contents("php://input"), true);
 

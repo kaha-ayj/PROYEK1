@@ -5,8 +5,8 @@ include 'config/koneksi.php';
 // Ambil data VENUE dari database
 $venue_list = [];
 
-$query = "SELECT venueID, namaVenue, alamat, foto 
-          FROM venue 
+$query = "SELECT venueID, namaVenue, alamat, foto, fasilitas
+          FROM venue
           ORDER BY namaVenue";
 
 $result = mysqli_query($conn, $query);
@@ -20,13 +20,23 @@ if ($result && mysqli_num_rows($result) > 0) {
         if (!empty($row['foto']) && file_exists($row['foto'])) {
             $fotoVenue = $row['foto'];
         }
+$fasilitasArr = [];
 
-        $venue_list[] = [
-            "id" => $row['venueID'],
-            "nama" => $row['namaVenue'],
-            "deskripsi" => $row['alamat'] ?? "Lokasi venue olahraga terbaik",
-            "gambar" => $fotoVenue
-        ];
+if (!empty($row['fasilitas'])) {
+    $fasilitasArr = array_map(
+        'trim',
+        explode(',', $row['fasilitas'])
+    );
+}
+
+       $venue_list[] = [
+    "id" => $row['venueID'],
+    "nama" => $row['namaVenue'],
+    "deskripsi" => $row['alamat'] ?? "Lokasi venue olahraga terbaik",
+    "gambar" => $fotoVenue,
+    "fasilitas" => $fasilitasArr
+];
+
     }
 
 } else {
@@ -141,6 +151,27 @@ mysqli_close($conn);
             font-size: 14px;
             transition: 0.3s;
         }
+.fasilitas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.fasilitas span {
+    background: #f1f5f9;
+    color: #334155;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.fasilitas i {
+    color: #0ea5e9;
+}
 
         .btn-nearby:hover {
             background: #0096c7;
@@ -171,7 +202,6 @@ mysqli_close($conn);
 <header class="header">
     <?php include 'includes/nav.php'; ?>
 </header>
-
 <main>
     <h2>Pilih Venue</h2>
     <div class="filter">Pilih lokasi</div>
@@ -184,10 +214,20 @@ mysqli_close($conn);
 
             <div class="card-content">
                 <h3><?php echo htmlspecialchars($venue['nama']); ?></h3>
-                <p><?php echo htmlspecialchars($venue['deskripsi']); ?></p>
+                
+              <div class="fasilitas">
+<?php foreach ($venue['fasilitas'] as $f): ?>
+    <span>
+        <i class="fas fa-check-circle"></i>
+        <?= htmlspecialchars($f); ?>
+    </span>
+<?php endforeach; ?>
+</div>
+
 
                 <div class="info-lapangan">
-                    <i class="fas fa-map-marker-alt"></i> Klik untuk melihat daftar lapangan
+                    <i class="fas fa-map-marker-alt"></i>
+                    <?php echo htmlspecialchars($venue['deskripsi']); ?>
                 </div>
 
                 <div class="lihat-jadwal">
@@ -201,7 +241,6 @@ mysqli_close($conn);
         <?php endforeach; ?>
     </div>
 </main>
-
 <img src="assets/image/image 4.png" class="footer-icon" alt="Dekorasi">
 <?php include 'includes/footer.php'; ?>
 </body>

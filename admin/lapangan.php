@@ -1,7 +1,8 @@
 <?php
 session_start();
 // Path koneksi sudah diperbaiki
-require_once '../config/koneksi.php';
+/** @var mysqli $conn */
+require_once $_SERVER['DOCUMENT_ROOT'] . "/PROYEK1/config/koneksi.php";
 
 // --- PERBAIKAN: GUNAKAN JOIN UNTUK MENGAMBIL NAMA VENUE ---
 $query = "SELECT 

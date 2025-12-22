@@ -13,8 +13,8 @@ if ($_SESSION['user']['role'] !== 'admin') {
     header('Location: ../homepage.php');
     exit;
 }
-
-require_once '../config/koneksi.php';
+/** @var mysqli $conn */
+require_once $_SERVER['DOCUMENT_ROOT'] . "/PROYEK1/config/koneksi.php";
 
 $selectedDate = $_GET['tanggal'] ?? date('Y-m-d');
 

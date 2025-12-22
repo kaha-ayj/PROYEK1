@@ -1,6 +1,7 @@
 <?php
 session_start();
-require_once '../config/koneksi.php';
+/** @var mysqli $conn */
+require_once $_SERVER['DOCUMENT_ROOT'] . "/PROYEK1/config/koneksi.php";
 
 $status_filter = $_GET['status'] ?? 'all';
 $tgl_mulai = $_GET['tgl_mulai'] ?? date('Y-m-d', strtotime('-30 days'));
