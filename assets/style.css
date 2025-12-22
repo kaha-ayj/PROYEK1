@@ -1,103 +1,101 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
 * {
-margin: 0;
-padding: 0;
-box-sizing: border-box;
-font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
 
 body {
-background: linear-gradient(180deg, #dfeef0 0%, #b8cfd3 100%);
-color: #222;
-min-height: 100vh;
+    background: linear-gradient(180deg, #dfeef0 0%, #b8cfd3 100%);
+    color: #222;
+    min-height: 100vh;
 }
 
-
 header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding: 25px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 80px;
 }
 
 .logo img {
-width: 200px; 
-height: auto;
-transform: scale(1.2);
+    width: 200px; 
+    height: auto;
+    transform: scale(1.2);
 }
 
 .buttons button {
-background: #2b2b2b;
-color: white;
-border: none;
-padding: 8px 20px;
-margin-left: 10px;
-border-radius: 6px;
-cursor: pointer;
-font-weight: 600;
-transition: 0.3s;
+    background: #2b2b2b;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    margin-left: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
 }
 
 .buttons button:hover {
-opacity: 0.8;
+    opacity: 0.8;
 }
 
 .hero {
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding: 60px 80px;
-gap: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 60px 80px;
+    gap: 30px;
 }
 
 .hero .text {
-display: flex;
-flex-direction: column;
-align-items: flex-start;
-max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: 600px;
 }
 
 .hero h2 {
-font-size: 32px;
-color: #1d1d1d;
-font-weight: 700;
-margin-bottom: 10px;
+    font-size: 32px;
+    color: #1d1d1d;
+    font-weight: 700;
+    margin-bottom: 10px;
 }
 
 .hero h3 {
-font-size: 20px;
-color: #333;
-font-weight: 600;
-margin-bottom: 20px;
+    font-size: 20px;
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 20px;
 }
 
 .hero p {
-color: #4a4a4a;
-line-height: 1.7;
-font-size: 14px;
-margin-bottom: 30px;
+    color: #4a4a4a;
+    line-height: 1.7;
+    font-size: 14px;
+    margin-bottom: 30px;
 }
 
 .hero .cta {
-background-color: #2b2b2b;
-color: white;
-padding: 12px 24px;
-border: none;
-border-radius: 10px;
-cursor: pointer;
-font-weight: 600;
-transition: 0.3s;
+    background-color: #2b2b2b;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
 }
 
 .hero .cta:hover {
-background-color: #444;
+    background-color: #444;
 }
 
 .hero .image img {
-width: 350px;
+    width: 350px;
 }
-
 
 /* ===== VARIABLES ===== */
 :root {
@@ -111,53 +109,7 @@ width: 350px;
     --transition: 0.3s;
 }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 25px 80px;
-}
-
-.logo img {
-    width: 200px;
-    height: auto;
-    transform: scale(1.2);
-}
-
-.buttons button {
-    background: var(--primary-color);
-    color: var(--white);
-    border: none;
-    padding: 8px 20px;
-    margin-left: 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: var(--transition);
-}
-
-.buttons button:hover {
-    opacity: 0.8;
-}
-
-
-.welcome-title {
-    font-size: 32px;
-    color: #000000;
-    font-weight: 600;
-    margin-bottom: 1px;
-
-}
-
-.welcome-subtitle {
-    font-size: 20px;
-    color: #000000;
-    font-weight: 500;
-    margin-bottom: 30px;
-}
-
-/* ===== RIGHT PANEL ===== */
-
+/* ==== Auth / Form Section ==== */
 .auth-nav {
     display: flex;
     justify-content: center;
@@ -188,6 +140,228 @@ header {
 .auth-btn:hover {
     opacity: 0.8;
 }
+
+.form-title {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+}
+
+.google-logo {
+    display: block;
+    margin: 0 auto 10px;
+    width: 40px;
+    height: 40px;
+}
+
+.google-text {
+    text-align: center;
+    font-size: 14px;
+    color: var(--light-text);
+    margin-bottom: 25px;
+}
+
+.registration-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #A1C2BD;
+    position: relative;
+    z-index: 1;
+    transition: var(--transition);
+    font-size: 14px;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(43, 43, 43, 0.2);
+}
+
+.form-input::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+.submit-area {
+    position: relative;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.shuttlecock-image {
+    width: 40px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.submit-btn {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    padding: 12px 40px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.submit-btn:hover {
+    background-color: #444;
+}
+
+.signin-link {
+    font-size: 14px;
+    color: var(--light-text);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.signin-link:hover {
+    color: var(--primary-color);
+}
+
+/* ===== RESPONSIVE FIXES ===== */
+@media (max-width: 1024px) {
+    header {
+        padding: 20px 40px;
+    }
+
+    .hero {
+        flex-direction: column;
+        padding: 40px 20px;
+        gap: 20px;
+    }
+
+    .hero .text {
+        max-width: 100%;
+        text-align: center;
+        align-items: center;
+    }
+
+    .hero .image img {
+        width: 250px;
+    }
+
+    .buttons button {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px 20px;
+        gap: 15px;
+    }
+
+    .logo img {
+        width: 150px;
+    }
+
+    .buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .hero {
+        padding: 30px 15px;
+        gap: 15px;
+    }
+
+    .hero .text {
+        max-width: 100%;
+    }
+
+    .hero h2 {
+        font-size: 24px;
+    }
+
+    .hero h3 {
+        font-size: 18px;
+    }
+
+    .hero p {
+        font-size: 13px;
+    }
+
+    .hero .image img {
+        width: 200px;
+    }
+
+    .submit-btn {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+
+    .registration-form {
+        padding: 0 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 10px 15px;
+    }
+
+    .logo img {
+        width: 130px;
+    }
+
+    .hero h2 {
+        font-size: 20px;
+    }
+
+    .hero h3 {
+        font-size: 16px;
+    }
+
+    .hero p {
+        font-size: 12px;
+    }
+
+    .hero .image img {
+        width: 150px;
+    }
+
+    .submit-btn {
+        padding: 10px 15px;
+        font-size: 14px;
+    }
+
+    .auth-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
+
 
 .form-title {
     text-align: center;

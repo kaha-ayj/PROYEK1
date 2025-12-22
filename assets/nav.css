@@ -207,3 +207,18 @@
 .dropdown a:hover {
     background-color: #f4f4f4;
 }
+@media (max-width: 768px) {
+    .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        height: 100%;
+        width: 220px;
+        background: #00acc1;
+        flex-direction: column;
+        padding-top: 80px;
+        gap: 20px;
+        transition: right 0.3s ease;
+        z-index: 999;
+    }
+}
