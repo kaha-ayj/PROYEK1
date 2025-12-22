@@ -1,8 +1,7 @@
 <?php
-// api/mark_read.php
+// admin/api/mark_read.php
 session_start();
-include 'config/koneksi.php';
-
+include __DIR__ . '/../../config/koneksi.php'; // ✅ PERBAIKAN: path yang benar
 header('Content-Type: application/json');
 
 // Cek session admin
@@ -12,7 +11,6 @@ if (!isset($_SESSION['user']) || ($_SESSION['user']['role'] ?? '') !== 'admin') 
 }
 
 $user_id = $_POST['user_id'] ?? 0;
-$admin_id = $_SESSION['user']['id'];
 
 if ($user_id <= 0) {
     echo json_encode(['success' => false, 'message' => 'Invalid user ID']);
@@ -42,6 +40,4 @@ try {
         'message' => $e->getMessage()
     ]);
 }
-
 $conn->close();
-?>

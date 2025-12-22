@@ -1,30 +1,34 @@
 <?php
-session_start();
-include __DIR__ . '/../../config/koneksi.php';
 header('Content-Type: application/json');
+session_start();
+include(__DIR__ . "/../../config/koneksi.php");
 
-// Ambil user_id dari session
-$user_id = $_SESSION['penggunaID'] ?? 0;
-$result = ['success' => false, 'messages' => []];
+// Pastikan session ID diambil dengan benar
+$user_id = $_SESSION['penggunaID'] ?? $_SESSION['user_id'] ?? $_SESSION['user']['id'] ?? 0;
 
-if ($user_id) {
-    $stmt = $conn->prepare("
-        SELECT sender, message, DATE_FORMAT(created_at, '%H:%i') as time
-        FROM chat
-        WHERE penggunaID = ?
-        ORDER BY created_at ASC
-    ");
+$response = ['success' => false, 'messages' => []];
+
+if ($user_id > 0) {
+    // Ambil SEMUA pesan untuk user ini (baik yang dikirim user maupun admin)
+    $query = "SELECT sender, message, DATE_FORMAT(created_at, '%H:%i') as time, created_at 
+              FROM chat 
+              WHERE penggunaID = ? 
+              ORDER BY created_at ASC";
+              
+    $stmt = $conn->prepare($query);
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
-    $res = $stmt->get_result();
+    $result = $stmt->get_result();
 
-    $messages = [];
-    while ($row = $res->fetch_assoc()) {
-        $messages[] = $row;
+    while ($row = $result->fetch_assoc()) {
+        $response['messages'][] = [
+            'sender' => $row['sender'], // pastikan di DB isinya 'admin' atau 'user'
+            'message' => $row['message'],
+            'time' => $row['time'],
+            'created_at' => $row['created_at']
+        ];
     }
-
-    $result['success'] = true;
-    $result['messages'] = $messages;
+    $response['success'] = true;
 }
 
-echo json_encode($result);
+echo json_encode($response);

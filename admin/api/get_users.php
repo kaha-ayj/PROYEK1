@@ -1,4 +1,4 @@
-<?php
+<?php //admin/api/get_user.php
 session_start();
 header('Content-Type: application/json');
 

@@ -1,5 +1,5 @@
 <?php
-// proyek1/admin/api/user_send.php
+// admin/api/user_send.php
 header('Content-Type: application/json');
 session_start();
 

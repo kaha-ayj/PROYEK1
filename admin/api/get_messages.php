@@ -1,4 +1,4 @@
-<?php
+<?php //admin/api/get_message.php
 session_start();
 header('Content-Type: application/json');
 include __DIR__ . '/../../config/koneksi.php';
