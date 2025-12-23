@@ -27,7 +27,7 @@
         kamu untuk booking kapan saja, dan di mana saja. Cek jadwal kosong, pilih lapangan favorit, 
         dan dapatkan konfirmasi instan. Olahraga jadi lebih mudah dan menyenangkan!
     </p>
-    <a href="lapangan.php"><button class="cta">PILIH LAPANGAN</button></a>
+    <a href="login.php"><button class="cta">PILIH LAPANGAN</button></a>
     </div>
 
     <div class="image">
