@@ -33,7 +33,6 @@ $username = $_SESSION['user']['nama'] ?? $_SESSION['nama'] ?? "User";
     <style>
    
         
-        /* MAIN CONTAINER - Match dengan layout yang ada */
         .container {
             flex: 0;
             max-width: 1400px;
@@ -557,6 +556,7 @@ $username = $_SESSION['user']['nama'] ?? $_SESSION['nama'] ?? "User";
             .welcome-box {
                 padding: 20px;
                 margin: 10px;
+            
             }
             
             .input-area {
@@ -605,13 +605,15 @@ $username = $_SESSION['user']['nama'] ?? $_SESSION['nama'] ?? "User";
             animation: slideIn 0.5s ease 0.1s backwards;
         }
     </style>
+
+    
 </head>
 <body>
-
+    
 <header class="header">
     <?php include 'includes/nav.php'; ?>
 </header>
-    
+
     <!-- MAIN CONTAINER -->
     <div class="container">
         <!-- SIDEBAR -->
