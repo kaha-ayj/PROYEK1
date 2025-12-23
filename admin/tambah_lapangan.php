@@ -1,22 +1,30 @@
 <?php
 session_start();
 /** @var mysqli $conn */
-require_once $_SERVER['DOCUMENT_ROOT'] . "/PROYEK1/config/koneksi.php";
+
+// Perbaikan Path Koneksi untuk Hosting
+// Menyesuaikan dengan struktur folder: /config/koneksi.php
+include_once __DIR__ . "/../config/koneksi.php";
 
 $error = '';
+
+// Ambil daftar venue untuk dropdown
+$query_venue = "SELECT venueID, namaVenue FROM venue ORDER BY namaVenue ASC";
+$result_venue = mysqli_query($conn, $query_venue);
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Ambil data dari form
     $namaLapangan = $_POST['namaLapangan'];
     $jenis = $_POST['jenis'];
     $hargaPerJam = $_POST['hargaPerJam'];
+    $venueID = $_POST['venueID']; // Menangkap venueID dari form
 
-    // Validasi sederhana
-    if (!empty($namaLapangan) && !empty($jenis) && !empty($hargaPerJam)) {
-
-        $query = "INSERT INTO lapangan (namaLapangan, jenis, hargaPerJam) VALUES (?, ?, ?)";
+    if (!empty($namaLapangan) && !empty($jenis) && !empty($hargaPerJam) && !empty($venueID)) {
+        // Query INSERT sekarang menyertakan venueID
+        $query = "INSERT INTO lapangan (namaLapangan, jenis, hargaPerJam, venueID) VALUES (?, ?, ?, ?)";
         $stmt = mysqli_prepare($conn, $query);
-        // 'ssd' = string, string, double
-        mysqli_stmt_bind_param($stmt, "ssd", $namaLapangan, $jenis, $hargaPerJam);
+
+        // 'ssdi' = string, string, double, integer
+        mysqli_stmt_bind_param($stmt, "ssdi", $namaLapangan, $jenis, $hargaPerJam, $venueID);
 
         if (mysqli_stmt_execute($stmt)) {
             header("Location: lapangan.php?status=sukses_tambah");
@@ -26,10 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         mysqli_stmt_close($stmt);
     } else {
-        $error = "Semua field wajib diisi.";
+        $error = "Semua field (termasuk Venue) wajib diisi.";
     }
 }
-mysqli_close($conn);
 ?>
 
 <!DOCTYPE html>
@@ -37,14 +44,12 @@ mysqli_close($conn);
 
 <head>
     <meta charset="UTF-8">
-    <title>Tambah Lapangan</title>
+    <title>Tambah Lapangan - Lapangin.Aja</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* (CSS Form standar) */
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #F0F4F8;
-            color: #2C3E50;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -61,11 +66,6 @@ mysqli_close($conn);
             max-width: 500px;
         }
 
-        .form-container h1 {
-            margin-top: 0;
-            text-align: center;
-        }
-
         .form-group {
             margin-bottom: 20px;
         }
@@ -76,7 +76,8 @@ mysqli_close($conn);
             margin-bottom: 8px;
         }
 
-        .form-group input {
+        .form-group input,
+        .form-group select {
             width: 100%;
             padding: 12px;
             border: 1px solid #DDE8F3;
@@ -98,7 +99,6 @@ mysqli_close($conn);
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
-            font-size: 16px;
             flex: 1;
             text-align: center;
         }
@@ -114,9 +114,12 @@ mysqli_close($conn);
         }
 
         .error {
-            color: red;
-            margin-bottom: 15px;
+            color: #C0392B;
+            background: #FDEDEC;
+            padding: 10px;
+            border-radius: 5px;
             text-align: center;
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -125,24 +128,35 @@ mysqli_close($conn);
     <div class="form-container">
         <h1>Tambah Lapangan Baru</h1>
         <?php if (!empty($error)): ?>
-            <p class="error"><?php echo $error; ?></p><?php endif; ?>
+            <p class="error"><?php echo $error; ?></p>
+        <?php endif; ?>
 
-        <form action="tambah_lapangan.php" method="POST">
+        <form action="" method="POST">
             <div class="form-group">
-                <label for="namaLapangan">Nama Lapangan</label>
-                <input type="text" id="namaLapangan" name="namaLapangan" placeholder="" required>
+                <label for="venueID">Pilih Venue</label>
+                <select name="venueID" id="venueID" required>
+                    <option value="">-- Pilih Venue --</option>
+                    <?php while ($v = mysqli_fetch_assoc($result_venue)): ?>
+                        <option value="<?php echo $v['venueID']; ?>"><?php echo htmlspecialchars($v['namaVenue']); ?>
+                        </option>
+                    <?php endwhile; ?>
+                </select>
             </div>
             <div class="form-group">
-                <label for="jenis">Jenis</label>
-                <input type="text" id="jenis" name="jenis" placeholder="" required>
+                <label for="namaLapangan">Nama Lapangan</label>
+                <input type="text" id="namaLapangan" name="namaLapangan" placeholder="Contoh: Lapangan A" required>
+            </div>
+            <div class="form-group">
+                <label for="jenis">Jenis Lapangan</label>
+                <input type="text" id="jenis" name="jenis" placeholder="Contoh: Badminton" required>
             </div>
             <div class="form-group">
                 <label for="hargaPerJam">Harga per Jam</label>
-                <input type="number" id="hargaPerJam" name="hargaPerJam" placeholder="" step="1000" required>
+                <input type="number" id="hargaPerJam" name="hargaPerJam" step="1000" required>
             </div>
             <div class="form-buttons">
                 <a href="lapangan.php" class="btn btn-cancel">Batal</a>
-                <button type="submit" class="btn btn-submit">Simpan</button>
+                <button type="submit" class="btn btn-submit">Simpan Data</button>
             </div>
         </form>
     </div>

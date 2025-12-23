@@ -334,6 +334,192 @@ if (isset($_POST['prosesBayar'])) {
       font-size: 12px;
     }
   }
+  /* =========================
+   RESPONSIVE PAYMENT PAGE
+   ========================= */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .payment-card {
+    width: 95%;
+    padding: 25px;
+  }
+
+  td img {
+    width: 100px;
+  }
+
+  .booking-box h4 {
+    font-size: 16px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+
+  .payment-card {
+    padding: 20px;
+    margin: 25px auto;
+  }
+
+  /* Ubah tabel jadi scroll horizontal */
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  th, td {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  td img {
+    width: 80px;
+  }
+
+  .booking-box {
+    padding: 15px;
+    max-width: 100%;
+  }
+
+  .booking-box h4 {
+    font-size: 15px;
+  }
+
+  .btn-booking {
+    width: 100%;
+    font-size: 15px;
+    padding: 14px;
+  }
+}
+
+/* HP Kecil */
+@media (max-width: 480px) {
+
+  .payment-card {
+    padding: 15px;
+    border-radius: 12px;
+  }
+
+  th {
+    font-size: 12px;
+  }
+
+  td {
+    font-size: 12px;
+  }
+
+  td img {
+    width: 65px;
+  }
+
+  .booking-box h4 {
+    font-size: 14px;
+  }
+
+  .btn-booking {
+    font-size: 14px;
+    padding: 12px;
+    border-radius: 10px;
+  }
+}
+/* =========================
+   FORCE BUTTON RESPONSIVE
+   ========================= */
+
+.booking-box {
+  width: 100%;
+  max-width: 100%;
+  padding: 20px;
+}
+
+.booking-box form {
+  width: 100%;
+}
+
+.btn-booking {
+  width: 100%;
+  display: block;
+  text-align: center;
+  font-size: 16px;
+  padding: 14px 20px;
+  border-radius: 12px;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .btn-booking {
+    font-size: 15px;
+    padding: 14px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .btn-booking {
+    width: 100%;
+    font-size: 15px;
+    padding: 15px;
+    border-radius: 12px;
+  }
+}
+
+/* HP kecil */
+@media (max-width: 480px) {
+  .btn-booking {
+    font-size: 14px;
+    padding: 14px;
+    border-radius: 10px;
+  }
+}
+
+/* =========================
+   MIDTRANS SNAP RESPONSIVE FIX
+   ========================= */
+
+/* Paksa iframe snap full layar */
+iframe[src*="snap"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+}
+
+/* Mobile fix */
+@media (max-width: 768px) {
+
+  /* Container popup snap */
+  .snap-container,
+  .snap-content,
+  .snap-body {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Iframe snap */
+  iframe {
+    width: 100% !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+  }
+
+  /* Hilangkan efek popup desktop */
+  .snap-popup {
+    width: 100% !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* HP kecil */
+@media (max-width: 480px) {
+  iframe {
+    height: 100vh !important;
+  }
+}
+
 </style>
 
 </head>

@@ -549,6 +549,136 @@ mysqli_close($conn);
             .jadwal-calendar-wrapper {
                 grid-template-columns: 1fr;
             }
+            /* =========================
+   RESPONSIVE FIX JADWAL
+   ========================= */
+
+/* Tablet */
+@media (max-width: 1024px) {
+    .content {
+        padding: 25px;
+        grid-template-columns: 280px 1fr;
+    }
+
+    .lapangan-image {
+        height: 180px;
+    }
+
+    .slot-container {
+        max-height: 350px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+
+    main.container {
+        padding: 0 15px;
+    }
+
+    .content {
+        grid-template-columns: 1fr;
+        padding: 20px;
+        gap: 25px;
+    }
+
+    /* LEFT */
+    .left {
+        order: 1;
+    }
+
+    .lapangan-image {
+        height: 160px;
+    }
+
+    .lapangan-btn {
+        font-size: 14px;
+        padding: 12px;
+    }
+
+    /* RIGHT */
+    .right {
+        order: 2;
+    }
+
+    .date-header {
+        font-size: 1.1em;
+        margin-top: 10px;
+        text-align: center;
+    }
+
+    .jadwal-calendar-wrapper {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    /* SLOT */
+    .slot-container {
+        max-height: 300px;
+    }
+
+    .slot-item {
+        font-size: 14px;
+        padding: 14px 16px;
+    }
+
+    /* KALENDER */
+    .calendar {
+        gap: 6px;
+    }
+
+    .calendar-day {
+        font-size: 13px;
+        border-radius: 8px;
+    }
+
+    /* BUTTON */
+    .btn-pilih {
+        font-size: 14px;
+        padding: 14px;
+        border-radius: 10px;
+    }
+
+    .back-link {
+        font-size: 13px;
+        padding: 8px 16px;
+    }
+}
+
+/* HP KECIL */
+@media (max-width: 480px) {
+
+    .content {
+        padding: 15px;
+    }
+
+    .venue-info h3 {
+        font-size: 1em;
+    }
+
+    .venue-info p {
+        font-size: 12px;
+    }
+
+    .lapangan-btn {
+        font-size: 13px;
+        padding: 10px;
+    }
+
+    .slot-item {
+        font-size: 13px;
+    }
+
+    .calendar-day {
+        font-size: 12px;
+    }
+
+    .btn-pilih {
+        font-size: 13px;
+        padding: 12px;
+    }
+}
+
         }
     </style>
 </head>

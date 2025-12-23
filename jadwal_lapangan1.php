@@ -79,6 +79,107 @@ mysqli_close($conn);
     <style>
         main { padding: 40px 80px; }
         h2 { font-size: 28px; color: #222; margin-bottom: 10px; }
+    
+@media (max-width: 1024px) {
+    main {
+        padding: 30px 40px;
+    }
+
+    .venue-container {
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        gap: 20px;
+    }
+
+    .card img {
+        width: 140px;
+        height: 90px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    main {
+        padding: 20px;
+    }
+
+    .filter {
+        font-size: 13px;
+        padding: 6px 14px;
+    }
+
+    .venue-container {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .card img {
+        width: 100%;
+        height: 180px;
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+
+    .card-content h3 {
+        font-size: 17px;
+    }
+
+    .card-content p {
+        font-size: 13px;
+    }
+
+    .lihat-jadwal {
+        justify-content: flex-start;
+        margin-top: 10px;
+    }
+
+    .btn-nearby {
+        font-size: 13px;
+        padding: 8px 14px;
+    }
+
+    .footer-icon {
+        width: 60px;
+        bottom: 10px;
+        left: 10px;
+    }
+}
+
+/* HP kecil */
+@media (max-width: 480px) {
+    h2 {
+        font-size: 20px;
+    }
+
+    .card {
+        padding: 15px;
+    }
+
+    .card img {
+        height: 150px;
+    }
+
+    .fasilitas span {
+        font-size: 11px;
+        padding: 5px 8px;
+    }
+
+    .info-lapangan {
+        font-size: 11px;
+    }
+
+    .btn-nearby {
+        font-size: 12px;
+    }
+}
 
         .filter {
             background: #8fa1a3;
@@ -195,6 +296,112 @@ mysqli_close($conn);
             width: 80px;
             opacity: 0.6;
         }
+        /* =========================
+   RESPONSIVE FIX
+   ========================= */
+
+/* Tablet */
+@media (max-width: 1024px) {
+    main {
+        padding: 30px 40px;
+    }
+
+    .venue-container {
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        gap: 20px;
+    }
+
+    .card img {
+        width: 140px;
+        height: 90px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    main {
+        padding: 20px;
+    }
+
+    .filter {
+        font-size: 13px;
+        padding: 6px 14px;
+    }
+
+    .venue-container {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .card img {
+        width: 100%;
+        height: 180px;
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+
+    .card-content h3 {
+        font-size: 17px;
+    }
+
+    .card-content p {
+        font-size: 13px;
+    }
+
+    .lihat-jadwal {
+        justify-content: flex-start;
+        margin-top: 10px;
+    }
+
+    .btn-nearby {
+        font-size: 13px;
+        padding: 8px 14px;
+    }
+
+    .footer-icon {
+        width: 60px;
+        bottom: 10px;
+        left: 10px;
+    }
+}
+
+/* HP kecil */
+@media (max-width: 480px) {
+    h2 {
+        font-size: 20px;
+    }
+
+    .card {
+        padding: 15px;
+    }
+
+    .card img {
+        height: 150px;
+    }
+
+    .fasilitas span {
+        font-size: 11px;
+        padding: 5px 8px;
+    }
+
+    .info-lapangan {
+        font-size: 11px;
+    }
+
+    .btn-nearby {
+        font-size: 12px;
+    }
+}
+
     </style>
 </head>
 

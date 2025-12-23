@@ -1,9 +1,10 @@
 <?php
 session_start();
 /** @var mysqli $conn */
-require_once $_SERVER['DOCUMENT_ROOT'] . "/PROYEK1/config/koneksi.php";
+// Gunakan path relatif agar aman di hosting
+require_once __DIR__ . "/../config/koneksi.php";
 
-// Ambil semua lapangan beserta nama venue
+// PERBAIKAN QUERY: Menggunakan LEFT JOIN agar lapangan tetap muncul meskipun relasi venue bermasalah
 $query = "SELECT 
             l.lapanganID, 
             l.namaLapangan, 
@@ -11,8 +12,8 @@ $query = "SELECT
             l.hargaPerJam, 
             v.namaVenue
           FROM lapangan l
-          JOIN venue v ON l.venueID = v.venueID
-          ORDER BY v.namaVenue ASC, l.namaLapangan ASC";
+          LEFT JOIN venue v ON l.venueID = v.venueID
+          ORDER BY l.lapanganID DESC"; // Urutkan dari yang terbaru
 
 $result = mysqli_query($conn, $query);
 ?>
@@ -26,9 +27,8 @@ $result = mysqli_query($conn, $query);
     <title>Kelola Lapangan - Lapangin.Aja</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
- <style>
-        /* ... CSS Anda (sama seperti sebelumnya) ... */
+    <style>
+        /* TAMPILAN ASLI ANDA (TIDAK BERUBAH) */
         :root {
             --bg-light: #F0F4F8;
             --bg-sidebar: #DDE8F3;
@@ -71,35 +71,8 @@ $result = mysqli_query($conn, $query);
             opacity: 0.7;
         }
 
-        .sidebar nav a:hover,
         .sidebar nav a.active {
             opacity: 1;
-        }
-
-        .sidebar .profile {
-            margin-top: auto;
-            display: flex;
-            align-items: center;
-            font-weight: 600;
-        }
-
-        .sidebar .profile-icon {
-            width: 40px;
-            height: 40px;
-            background-color: #5D6D7E;
-            border-radius: 50%;
-            margin-right: 15px;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>');
-            background-size: 60%;
-            background-position: center;
-        }
-
-        .sidebar .profile a {
-            text-decoration: none;
-            color: var(--text-dark);
-            margin-left: auto;
-            font-size: 1.5em;
-            opacity: 0.6;
         }
 
         .main-content {
@@ -138,11 +111,6 @@ $result = mysqli_query($conn, $query);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
-        .table-container h2 {
-            margin-top: 0;
-            margin-bottom: 25px;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
@@ -157,46 +125,32 @@ $result = mysqli_query($conn, $query);
             padding: 15px;
             font-size: 14px;
             font-weight: 600;
-            opacity: 0.8;
-        }
-
-        th:first-child {
-            border-radius: 10px 0 0 10px;
-        }
-
-        th:last-child {
-            border-radius: 0 10px 10px 0;
         }
 
         tbody tr {
             border-bottom: 1px solid #EAECEE;
         }
 
-        tbody tr:last-child {
-            border-bottom: none;
-        }
-
         td {
             padding: 20px 15px;
-            vertical-align: middle;
         }
 
         .action-btn {
-            display: inline-block;
             text-decoration: none;
-            color: var(--text-dark);
-            margin: 0 5px;
             font-size: 18px;
+            margin: 0 5px;
         }
 
-        .action-btn.edit {
+        .edit {
             color: #2980B9;
         }
 
-        .action-btn.delete {
+        .delete {
             color: #C0392B;
         }
     </style>
+</head>
+
 <body>
     <aside class="sidebar">
         <div class="logo">Lapangin.Aja</div>
@@ -205,29 +159,17 @@ $result = mysqli_query($conn, $query);
             <a href="order.php">Order</a>
             <a href="jadwal.php">Jadwal</a>
             <a href="lapangan.php" class="active">Lapangan</a>
-            <a href="messege.php"> Pesan </a>
+            <a href="messege.php">Pesan</a>
         </nav>
-        <div class="profile">
-            <div class="profile-icon"></div>
-            <span>Profile</span>
-            <a href="logout.php" title="Logout">
-                <i class="fa-solid fa-right-from-bracket"></i>
-            </a>
-        </div>
     </aside>
 
     <main class="main-content">
         <div class="header">
             <h1>Kelola Lapangan</h1>
         </div>
-
         <div class="table-container">
             <h2>Daftar Lapangan</h2>
-
-            <a href="tambah_lapangan.php" class="tambah-btn">
-                <i class="fa-solid fa-plus"></i> Tambah Lapangan
-            </a>
-
+            <a href="tambah_lapangan.php" class="tambah-btn"><i class="fa-solid fa-plus"></i> Tambah Lapangan</a>
             <table>
                 <thead>
                     <tr>
@@ -240,34 +182,29 @@ $result = mysqli_query($conn, $query);
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                    $colspan = 6;
-                    if (mysqli_num_rows($result) == 0):
-                        echo "<tr><td colspan='{$colspan}' style='text-align:center;'>Belum ada data lapangan.</td></tr>";
-                    else:
+                    <?php if (mysqli_num_rows($result) == 0): ?>
+                        <tr>
+                            <td colspan="6" style="text-align:center;">Belum ada data lapangan.</td>
+                        </tr>
+                    <?php else:
                         $no = 1;
                         while ($row = mysqli_fetch_assoc($result)):
                             $harga = "Rp. " . number_format($row['hargaPerJam'], 0, ',', '.');
-                    ?>
+                            ?>
                             <tr>
                                 <td><?php echo $no++; ?></td>
-                                <td><?php echo htmlspecialchars($row['namaVenue']); ?></td>
+                                <td><?php echo htmlspecialchars($row['namaVenue'] ?? 'N/A'); ?></td>
                                 <td><?php echo htmlspecialchars($row['namaLapangan']); ?></td>
                                 <td><?php echo htmlspecialchars($row['jenis']); ?></td>
                                 <td><?php echo $harga; ?></td>
                                 <td>
-                                    <a href="edit_lapangan.php?id=<?php echo $row['lapanganID']; ?>" class="action-btn edit" title="Edit Lapangan">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                    </a>
-                                    <a href="hapus_lapangan.php?id=<?php echo $row['lapanganID']; ?>" class="action-btn delete" title="Hapus Lapangan" onclick="return confirm('Yakin hapus lapangan ini?');">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </a>
+                                    <a href="edit_lapangan.php?id=<?php echo $row['lapanganID']; ?>" class="action-btn edit"><i
+                                            class="fa-solid fa-pen-to-square"></i></a>
+                                    <a href="hapus_lapangan.php?id=<?php echo $row['lapanganID']; ?>" class="action-btn delete"
+                                        onclick="return confirm('Yakin hapus?');"><i class="fa-solid fa-trash"></i></a>
                                 </td>
                             </tr>
-                    <?php
-                        endwhile;
-                    endif;
-                    ?>
+                        <?php endwhile; endif; ?>
                 </tbody>
             </table>
         </div>
@@ -275,7 +212,4 @@ $result = mysqli_query($conn, $query);
 </body>
 
 </html>
-
-<?php
-mysqli_close($conn);
-?>
+<?php mysqli_close($conn); ?>

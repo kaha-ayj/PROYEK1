@@ -604,6 +604,156 @@ $username = $_SESSION['user']['nama'] ?? $_SESSION['nama'] ?? "User";
         .chat-area {
             animation: slideIn 0.5s ease 0.1s backwards;
         }
+        /* =========================
+   RESPONSIVE FIX FINAL
+========================= */
+
+/* === TABLET & SMALL LAPTOP === */
+@media (max-width: 1024px) {
+    .container {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .sidebar {
+        width: 100%;
+        position: relative;
+        top: unset;
+    }
+
+    .chat-area {
+        height: calc(100vh - 260px);
+    }
+}
+
+/* === MOBILE LANDSCAPE & SMALL TABLET === */
+@media (max-width: 768px) {
+    body {
+        overflow-x: hidden;
+    }
+
+    .container {
+        padding: 0 10px;
+        margin: 10px auto;
+    }
+
+    /* Sidebar jadi card atas */
+    .sidebar {
+        padding: 18px;
+        border-radius: 14px;
+    }
+
+    .sidebar-header h1 {
+        font-size: 20px;
+    }
+
+    .admin-card {
+        padding: 15px;
+    }
+
+    .chat-area {
+        height: calc(100vh - 300px);
+        border-radius: 14px;
+    }
+
+    .chat-header {
+        padding: 14px 16px;
+    }
+
+    .chat-title h2 {
+        font-size: 16px;
+    }
+
+    .chat-title p {
+        font-size: 12px;
+    }
+
+    .messages {
+        padding: 16px;
+    }
+
+    .message {
+        max-width: 90%;
+    }
+
+    .input-area {
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .message-input {
+        font-size: 14px;
+        padding: 12px 16px;
+    }
+
+    .send-btn {
+        width: 46px;
+        height: 46px;
+        font-size: 18px;
+    }
+}
+
+/* === MOBILE PORTRAIT === */
+@media (max-width: 480px) {
+    .sidebar {
+        padding: 15px;
+    }
+
+    .sidebar-header h1 {
+        font-size: 18px;
+    }
+
+    .help-tips li {
+        font-size: 12px;
+    }
+
+    .chat-area {
+        height: calc(100vh - 320px);
+    }
+
+    .avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
+    }
+
+    .bubble {
+        font-size: 13px;
+        padding: 10px 14px;
+    }
+
+    .time {
+        font-size: 10px;
+    }
+
+    .welcome-box {
+        padding: 18px;
+        margin: 10px 0;
+    }
+
+    .welcome-box h3 {
+        font-size: 17px;
+    }
+
+    .welcome-box p {
+        font-size: 13px;
+    }
+
+    .quick-links li {
+        font-size: 13px;
+    }
+}
+
+/* === FIX INPUT KE-ANGKAT SAAT KEYBOARD MOBILE === */
+@media (max-width: 480px) {
+    .input-area {
+        position: sticky;
+        bottom: 0;
+        background: #fff;
+        z-index: 10;
+    }
+}
+
     </style>
 
     
