@@ -11,7 +11,7 @@ if ($_SESSION['user']['role'] !== 'admin') {
 }
 
 /** @var mysqli $conn */
-require_once $_SERVER['DOCUMENT_ROOT'] . "/PROYEK1/config/koneksi.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/lapangin.aja/config/koneksi.php";
 
 // 1. Inisialisasi Tanggal (Hanya satu kali)
 $selectedDate = $_GET['tanggal'] ?? date('Y-m-d');

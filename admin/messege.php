@@ -448,10 +448,10 @@ body {
 <script>
 // =========== KONFIGURASI API ===========
 // SESUAIKAN DENGAN NAMA FILE DI GAMBAR VS CODE KAMU
-const API_GET_USERS = '/proyek1/admin/api/get_users.php';     // Pastikan pakai 's'
-const API_GET_MESSAGES = '/proyek1/admin/api/get_messages.php'; 
-const API_SEND_MESSAGE = '/proyek1/admin/api/send_admin_message.php'; // Perbaiki typo 'messsges' jadi 'messages'
-const API_MARK_READ = '/proyek1/admin/api/mark_read.php';
+const API_GET_USERS = '/lapangin.aja/admin/api/get_users.php';     // Pastikan pakai 's'
+const API_GET_MESSAGES = '/lapangin.aja/admin/api/get_messages.php'; 
+const API_SEND_MESSAGE = '/lapangin.aja/admin/api/send_admin_message.php'; // Perbaiki typo 'messsges' jadi 'messages'
+const API_MARK_READ = '/lapangin.aja/admin/api/mark_read.php';
 
 let currentUserId = null;
 let lastMessageCount = 0;

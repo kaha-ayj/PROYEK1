@@ -1,7 +1,7 @@
 <?php
 session_start();
 /** @var mysqli $conn */
-require_once $_SERVER['DOCUMENT_ROOT'] . "/PROYEK1/config/koneksi.php";
+require_once $_SERVER['DOCUMENT_ROOT'] . "/lapangin.aja/config/koneksi.php";
 $lapangan_list = [];
 
 // Query modifikasi: JOIN ke tabel venue agar nama lapangan muncul bersama venue-nya
