@@ -2,6 +2,10 @@
 RewriteEngine On
 RewriteBase /proyek1/
 
+# Redirect HTTP → HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
 # Set default charset
 AddDefaultCharset UTF-8
 
